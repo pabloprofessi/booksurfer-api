@@ -1,0 +1,17 @@
+booksurfer-api:
+  build: .
+  command: flask run --host 0.0.0.0 --reload --debugger
+  ports:
+    - "5000:5000"
+  links:
+    - db:db
+  environment:
+    FLASK_APP: booksurfer_runner.py
+
+db:
+  image: mysql:5.7
+  environment:
+    MYSQL_ROOT_PASSWORD: booksurfer
+    MYSQL_DATABASE: booksurfer
+    MYSQL_USER: booksurfer
+    MYSQL_PASSWORD: booksurfer
