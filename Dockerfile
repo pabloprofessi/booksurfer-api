@@ -21,4 +21,4 @@ RUN pip install -e .
 
 ENV APP_ENV=dev
 
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "booksurfer_runner"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "runner"]

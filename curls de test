@@ -1,0 +1,11 @@
+curls de test
+---------------
+
+curl -X GET localhost:5000/ping
+curl -X GET localhost:5000/authors
+
+curl -H "Content-Type: application/json" -X POST -d '{"first_name": "Juan", "last_name": "Tomate", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "nationality": "Argentina"}' localhost:5000/authors
+
+curl -H "Content-Type: application/json" -X PUT -d '{"first_name": "Juan", "last_name": "Tomate", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "nationality": "Chileno"}' localhost:5000/authors/1
+
+

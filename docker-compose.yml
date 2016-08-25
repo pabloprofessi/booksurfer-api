@@ -3,10 +3,12 @@ booksurfer-api:
   command: flask run --host 0.0.0.0 --reload --debugger
   ports:
     - "5000:5000"
+  volumes:
+    - ./:/app/
   links:
     - db:db
   environment:
-    FLASK_APP: booksurfer_runner.py
+    FLASK_APP: runner.py
 
 db:
   image: mysql:5.7
