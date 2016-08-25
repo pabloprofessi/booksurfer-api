@@ -4,8 +4,20 @@ curls de test
 curl -X GET localhost:5000/ping
 curl -X GET localhost:5000/authors
 
+curl -X GET localhost:5000/authors/1
+curl -X DELETE localhost:5000/authors
+
+
 curl -H "Content-Type: application/json" -X POST -d '{"first_name": "Juan", "last_name": "Tomate", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "nationality": "Argentina"}' localhost:5000/authors
+
+curl -H "Content-Type: application/json" -X POST -d '{"first_name": "Pedro", "last_name": "Calabaza", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "nationality": "Argentina"}' localhost:5000/authors
+
 
 curl -H "Content-Type: application/json" -X PUT -d '{"first_name": "Juan", "last_name": "Tomate", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "nationality": "Chileno"}' localhost:5000/authors/1
 
 
+curl -H "Content-Type: application/json" -X POST -d '{"title": "hatty potter", "publisher": "planeta", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "publish_year": "1999", "editorial": "garbarino", "publish_year": "1999", "author_id":"2" }' localhost:5000/books
+
+
+
+curl -H "Content-Type: application/json" -X POST -d '{"title": "señor de los anillos", "publisher": "planeta", "image_url": "https://media.creativemornings.com/uploads/user/avatar/49419/Bechtel_Profile_Square.jpg", "publish_year": "1999", "editorial": "garbarino", "publish_year": "1999", "author_id":"2" }' localhost:5000/books
