@@ -13,7 +13,7 @@ class PingResource(Resource):
         return "pong"
 class AuthorResource(Resource):
 
-    @marshal_with(Author.books_nested_fields())
+    @marshal_with(Author.simple_fields())
     def get(self):
         response = Author.query.all()
         return response
@@ -22,15 +22,15 @@ class AuthorResource(Resource):
     def post(self):
         json_data = request.get_json(force=True)
         response = Author.create(
-        	json_data['first_name'], 
-        	json_data['last_name'], 
+            json_data['first_name'], 
+            json_data['last_name'], 
             json_data['image_url'], 
             json_data['nationality'])
         return response
 
 class AuthorResourceWithId(Resource):
 
-    @marshal_with(Author.books_nested_fields())
+    @marshal_with(Author.simple_fields())
     def get(self, authors_id):
         response = Author.get(authors_id)
         return response
@@ -39,8 +39,8 @@ class AuthorResourceWithId(Resource):
     def put(self, authors_id):
         json_data = request.get_json(force=True)
         response = Author.update(authors_id,
-        	json_data['first_name'], 
-        	json_data['last_name'], 
+            json_data['first_name'], 
+            json_data['last_name'], 
             json_data['image_url'], 
             json_data['nationality'])
         return response
@@ -52,26 +52,26 @@ class AuthorResourceWithId(Resource):
 
 class BookResource(Resource):
 
-    @marshal_with(Book.simple_fields())
+    @marshal_with(Book.complete_fields())
     def get(self):
         response = Book.query.all()
         return response
 
-    @marshal_with(Book.simple_fields())
+    @marshal_with(Book.complete_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Book.create(
-        	json_data['title'], 
-        	json_data['publisher'], 
-        	json_data['author_id'], 
-        	json_data['image_url'], 
-        	json_data['publish_year'], 
-        	json_data['editorial'])
+            json_data['title'], 
+            json_data['publisher'], 
+            json_data['image_url'], 
+            json_data['publish_year'], 
+            json_data['editorial'],
+            json_data['authors'])
         return response
 
 class BookResourceWithId(Resource):
 
-    @marshal_with(Book.simple_fields())
+    @marshal_with(Book.complete_fields())
     def get(self, books_id):
         response = Book.get(books_id)
         return response
@@ -80,14 +80,11 @@ class BookResourceWithId(Resource):
     def put(self, books_id):
         json_data = request.get_json(force=True)
         response = Book.update(books_id,
-        	json_data['title'], 
-        	json_data['publisher'], 
-        	json_data['author_id'], 
-        	json_data['image_url'], 
-        	json_data['publish_year'], 
-        	json_data['editorial'],
-        	json_data['copies_available'],
-        	json_data['copies_total'])
+            json_data['title'], 
+            json_data['publisher'], 
+            json_data['image_url'], 
+            json_data['publish_year'], 
+            json_data['editorial'])
         return response
 
     @marshal_with(Book.simple_fields())

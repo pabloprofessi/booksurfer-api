@@ -17,8 +17,10 @@ RUN pip install -r /app/requirements.txt
 
 COPY . /app
 
-RUN pip install -e .
+RUN pip install .
 
 ENV APP_ENV=dev
+
+RUN sleep 5
 
 CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "runner"]
