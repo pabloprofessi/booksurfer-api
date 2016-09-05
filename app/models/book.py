@@ -10,7 +10,6 @@ books_author = db.Table('books_author',
     db.PrimaryKeyConstraint('book_id', 'author_id')
 )
 
-
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     authors = db.relationship('Author', secondary=books_author,
@@ -18,9 +17,13 @@ class Book(db.Model):
     samples = db.relationship('Sample', backref='book', lazy='dynamic', uselist=True)
     title = db.Column(db.String(200))
     publisher = db.Column(db.String(200))
-    image_url = db.Column(db.String(500))
-    publish_year = db.Column(db.String(4))
-    editorial = db.Column(db.String(200))
+    edition_year = db.Column(db.String(4))
+    edition_country = db.Column(db.String(64))
+    price = db.Column(db.String(10))
+    isbn = db.Column(db.String(10))
+    reputation_value = db.Column(db.Integer)
+
+    
 
     @staticmethod
     def simple_fields():
@@ -28,9 +31,11 @@ class Book(db.Model):
                 'id': fields.String,
                 'title': fields.String,
                 'publisher': fields.String,
-                'image_url': fields.String,
-                'publish_year': fields.String,
-                'editorial': fields.String,
+                'edition_year': fields.String,
+                'edition_country': fields.String,
+                'price': fields.String,
+                'isbn': fields.String,
+                'reputation_value': fields.String,
                 }
 
 
@@ -40,9 +45,11 @@ class Book(db.Model):
                 'id': fields.String,
                 'title': fields.String,
                 'publisher': fields.String,
-                'image_url': fields.String,
-                'publish_year': fields.String,
-                'editorial': fields.String,
+                'edition_year': fields.String,
+                'edition_country': fields.String,
+                'price': fields.String,
+                'isbn': fields.String,
+                'reputation_value': fields.String,
                 'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
                 'samples': fields.List(fields.Nested(Sample.simple_fields()), attribute='samples'),
                 }
@@ -52,11 +59,11 @@ class Book(db.Model):
         return Book.query.get(id);
     
     @staticmethod
-    def create(title, publisher, image_url, publish_year, editorial, authors, samples):
-        has_one = Book.query.filter_by(title=title, publisher=publisher, publish_year=publish_year, editorial=editorial).first()
+    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, authors, samples):
+        has_one = Book.query.filter_by(isbn=isbn).first()
         if has_one:
             return has_one    
-        new_book = Book(title=title, publisher=publisher, image_url=image_url, publish_year=publish_year, editorial=editorial)
+        new_book = Book(title=title, publisher=publisher,  edition_year=edition_year, edition_country=edition_country, price=price, isbn=isbn, reputation_value=reputation_value)
         for a_author in authors:
             new_author = Author.create(a_author['first_name'], a_author['last_name'], a_author['image_url'], a_author['nationality'])
             new_book.authors.append(new_author)
@@ -68,14 +75,16 @@ class Book(db.Model):
         return new_book
 
     @staticmethod
-    def update(id, title, publisher, image_url, publish_year, editorial):
+    def update(id, title, publisher, edition_year, edition_country, price, isbn, reputation_value):
         book = Book.query.get(id)
         if book:
             book.title = title 
             book.publisher = publisher 
-            book.image_url = image_url 
-            book.publish_year = publish_year 
-            book.editorial = editorial 
+            book.edition_year = edition_year 
+            book.edition_country = edition_country
+            book.price = price
+            book.isbn = isbn
+            book.reputation_value = reputation_value
         db.session.commit()
         return book
 

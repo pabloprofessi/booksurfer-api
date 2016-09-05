@@ -31,14 +31,14 @@ class AuthorResource(Resource):
 class AuthorResourceWithId(Resource):
 
     @marshal_with(Author.simple_fields())
-    def get(self, authors_id):
-        response = Author.get(authors_id)
+    def get(self, author_id):
+        response = Author.get(author_id)
         return response
 
     @marshal_with(Author.simple_fields())
-    def put(self, authors_id):
+    def put(self, author_id):
         json_data = request.get_json(force=True)
-        response = Author.update(authors_id,
+        response = Author.update(author_id,
             json_data['first_name'], 
             json_data['last_name'], 
             json_data['image_url'], 
@@ -46,8 +46,8 @@ class AuthorResourceWithId(Resource):
         return response
 
     @marshal_with(Author.simple_fields())
-    def delete(self, authors_id):
-        response = Author.delete(authors_id)
+    def delete(self, author_id):
+        response = Author.delete(author_id)
         return response
 
 class BookResource(Resource):
@@ -72,14 +72,14 @@ class BookResource(Resource):
 class BookResourceWithId(Resource):
 
     @marshal_with(Book.complete_fields())
-    def get(self, books_id):
-        response = Book.get(books_id)
+    def get(self, book_id):
+        response = Book.get(book_id)
         return response
 
     @marshal_with(Book.simple_fields())
-    def put(self, books_id):
+    def put(self, book_id):
         json_data = request.get_json(force=True)
-        response = Book.update(books_id,
+        response = Book.update(book_id,
             json_data['title'], 
             json_data['publisher'], 
             json_data['image_url'], 
@@ -88,13 +88,56 @@ class BookResourceWithId(Resource):
         return response
 
     @marshal_with(Book.simple_fields())
-    def delete(self, books_id):
-        response = Book.delete(books_id)
+    def delete(self, book_id):
+        response = Book.delete(book_id)
+        return response
+
+
+
+class SampleResource(Resource):
+
+    @marshal_with(Sample.simple_fields())
+    def get(self):
+        response = Sample.query.all()
+        return response
+
+    @marshal_with(Sample.simple_fields())
+    def post(self):
+        json_data = request.get_json(force=True)
+        response = Sample.create(
+            json_data['first_name'], 
+            json_data['last_name'], 
+            json_data['image_url'], 
+            json_data['nationality'])
+        return response
+
+class SampleResourceWithId(Resource):
+
+    @marshal_with(Sample.simple_fields())
+    def get(self, sample_id):
+        response = Sample.get(sample_id)
+        return response
+
+    @marshal_with(Sample.simple_fields())
+    def put(self, sample_id):
+        json_data = request.get_json(force=True)
+        response = Sample.update(sample_id,
+            json_data['first_name'], 
+            json_data['last_name'], 
+            json_data['image_url'], 
+            json_data['nationality'])
+        return response
+
+    @marshal_with(Sample.simple_fields())
+    def delete(self, sample_id):
+        response = Sample.delete(sample_id)
         return response
 
 extensions.api.add_resource(PingResource, '/ping')
 extensions.api.add_resource(AuthorResource, '/authors')
-extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:authors_id>')
+extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:author_id>')
 extensions.api.add_resource(BookResource, '/books')
-extensions.api.add_resource(BookResourceWithId, '/books/<string:books_id>')
+extensions.api.add_resource(BookResourceWithId, '/books/<string:book_id>')
+extensions.api.add_resource(SampleResource, '/books/<string:book_id>/samples')
+extensions.api.add_resource(SampleResourceWithId, '/books/<string:book_id>/samples/<string:sample_id>')
 
