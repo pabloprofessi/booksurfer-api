@@ -1,12 +1,15 @@
 import os
 
 from flask import Flask
+from flask_cors import CORS, cross_origin
+
 
 from . import extensions, resources
 
 
 def create_app(environment='dev'):
     app = Flask('booksurfer-api')
+    CORS(app)
 
     app.config.from_pyfile('config/{}.py'.format(environment))
 

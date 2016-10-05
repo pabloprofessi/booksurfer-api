@@ -31,11 +31,11 @@ class Book(db.Model):
                 'id': fields.String,
                 'title': fields.String,
                 'publisher': fields.String,
-                'edition_year': fields.String,
-                'edition_country': fields.String,
+                'editionYear': fields.String(attribute='edition_year'),
+                'editionCountry': fields.String(attribute='edition_country'),
                 'price': fields.String,
                 'isbn': fields.String,
-                'reputation_value': fields.String,
+                'reputationValue': fields.String(attribute='reputation_value'),
                 }
 
 
@@ -45,11 +45,11 @@ class Book(db.Model):
                 'id': fields.String,
                 'title': fields.String,
                 'publisher': fields.String,
-                'edition_year': fields.String,
-                'edition_country': fields.String,
+                'editionYear': fields.String(attribute='edition_year'),
+                'editionCountry': fields.String(attribute='edition_country'),
                 'price': fields.String,
                 'isbn': fields.String,
-                'reputation_value': fields.String,
+                'reputationValue': fields.String(attribute='reputation_value'),
                 'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
                 'samples': fields.List(fields.Nested(Sample.simple_fields()), attribute='samples'),
                 }
@@ -65,7 +65,7 @@ class Book(db.Model):
             return has_one    
         new_book = Book(title=title, publisher=publisher,  edition_year=edition_year, edition_country=edition_country, price=price, isbn=isbn, reputation_value=reputation_value)
         for a_author in authors:
-            new_author = Author.create(a_author['first_name'], a_author['last_name'], a_author['image_url'], a_author['nationality'])
+            new_author = Author.create(a_author['first_name'], a_author['last_name'],  a_author['nationality'])
             new_book.authors.append(new_author)
         for a_sample in samples:
             new_sample = Sample.create(a_sample['book_id'], a_sample['acquisition_date'], a_sample['withdraw_date'], a_sample['bar_code'])

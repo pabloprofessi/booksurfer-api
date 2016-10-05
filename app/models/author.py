@@ -12,8 +12,8 @@ class Author(db.Model):
     def simple_fields():
         return {
                 'id': fields.String,
-                'first_name': fields.String,
-                'last_name': fields.String,
+                'firstName': fields.String(attribute='first_name'),
+                'lastName': fields.String(attribute='last_name'),
                 'nationality': fields.String,
                 }
 
@@ -23,6 +23,7 @@ class Author(db.Model):
     
     @staticmethod
     def create(first_name, last_name, nationality):
+        print(first_name + last_name + nationality)
         has_one = Author.query.filter_by(first_name=first_name, last_name=last_name,nationality=nationality).first()
         if has_one:
             return has_one

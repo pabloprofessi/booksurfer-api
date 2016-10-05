@@ -1,6 +1,15 @@
 curls de test
 ---------------
 
+rutas:
+/ping
+/books
+/books/<id>/samples
+/authors
+/members
+/loans
+
+
 curl -X GET localhost:5000/ping
 -------------------------------
 

@@ -1,9 +1,11 @@
 from ..extensions import db
 from flask_restful import fields
 
+from loan import Loan
 
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    loans = db.relationship('Loan', backref='member', lazy='dynamic', uselist=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     dni = db.Column(db.String(16))
@@ -18,22 +20,22 @@ class Member(db.Model):
     reputation = db.Column(db.Integer)
 
 
-   @staticmethod
+    @staticmethod
     def simple_fields():
         return {
-            id = fields.String,
-            first_name = fields.String,
-            last_name = fields.String,
-            dni = fields.String,
-            nationality = fields.String,
-            cuil = fields.String,
-            phone = fields.String,
-            email = fields.String,
-            zip_code = fields.String,
-            city = fields.String,
-            state = fields.String,
-            enabled = fields.String,
-            reputation = fields.String,
+            'id' : fields.String,
+            'firstName' : fields.String(attribute='first_name'),
+            'lastName' : fields.String(attribute='last_name'),
+            'dni' : fields.String,
+            'nationality' : fields.String,
+            'cuil' : fields.String,
+            'phone' : fields.String,
+            'email' : fields.String,
+            'zipCode' : fields.String(attribute='zip_code'),
+            'city' : fields.String,
+            'state' : fields.String,
+            'enabled' : fields.String,
+            'reputation' : fields.String,
         }
 
     @staticmethod
@@ -46,8 +48,8 @@ class Member(db.Model):
         if has_one:
             return has_one
         new_one = Member(first_name=first_name, last_name=last_name, dni=dni, nationality=nationality, 
-        	            cuil=cuil, phone=phone, email=email, zip_code=zip_code, city=city, state=state, 
-        	            enabled=enabled, reputation=reputation)
+                        cuil=cuil, phone=phone, email=email, zip_code=zip_code, city=city, state=state, 
+                        enabled=enabled, reputation=reputation)
         db.session.add(new_one)
         db.session.commit()
         return new_one

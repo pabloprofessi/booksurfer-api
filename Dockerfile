@@ -9,6 +9,8 @@ RUN mkdir /app
 
 RUN pip install gunicorn mysql-python pytest pytest-cov mock
 
+RUN pip install -U flask-cors
+
 COPY requirements.txt /app/requirements.txt
 
 WORKDIR /app
