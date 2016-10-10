@@ -23,13 +23,22 @@ class Author(db.Model):
     
     @staticmethod
     def create(first_name, last_name, nationality):
-        print(first_name + last_name + nationality)
         has_one = Author.query.filter_by(first_name=first_name, last_name=last_name,nationality=nationality).first()
         if has_one:
             return has_one
         new_one = Author(first_name=first_name, last_name=last_name,  nationality=nationality)
         db.session.add(new_one)
         db.session.commit()
+        return new_one
+
+    @staticmethod
+    def create_with_book(first_name, last_name, nationality):
+        has_one = Author.query.filter_by(first_name=first_name, last_name=last_name,nationality=nationality).first()
+        if has_one:
+            return has_one
+        new_one = Author(first_name=first_name, last_name=last_name,  nationality=nationality)
+        #db.session.add(new_one)
+        #db.session.commit()
         return new_one
 
     @staticmethod

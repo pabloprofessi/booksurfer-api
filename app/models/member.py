@@ -3,6 +3,12 @@ from flask_restful import fields
 
 from loan import Loan
 
+def str_to_bool(a_string):
+    return a_string.lower() in ['true', '1', 't', 'y', 'yes', 'yeah', 'yup', 'certainly', 'uh-huh']
+    
+    
+
+
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     loans = db.relationship('Loan', backref='member', lazy='dynamic', uselist=True)
@@ -42,6 +48,7 @@ class Member(db.Model):
     def get(id):
         return Member.query.get(id);
 
+
     @staticmethod
     def create(first_name, last_name, dni, nationality, cuil, phone, email, zip_code, city, state, enabled, reputation):
         has_one = Member.query.filter_by(first_name=first_name, last_name=last_name, dni=dni).first()
@@ -49,7 +56,7 @@ class Member(db.Model):
             return has_one
         new_one = Member(first_name=first_name, last_name=last_name, dni=dni, nationality=nationality, 
                         cuil=cuil, phone=phone, email=email, zip_code=zip_code, city=city, state=state, 
-                        enabled=enabled, reputation=reputation)
+                        enabled=str_to_bool(enabled), reputation=reputation)
         db.session.add(new_one)
         db.session.commit()
         return new_one
@@ -68,7 +75,7 @@ class Member(db.Model):
             member.zip_code = zip_code
             member.city = city
             member.state = state
-            member.enabled = enabled
+            member.enabled = str_to_bool(enabled)
             member.reputation = reputation
         db.session.commit()
         return member

@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import pytest
+import json
+
+from mock import patch, Mock
+from app import create_app
+from app.extensions import db
+
+
+
 @pytest.fixture
 def basic_api():
     app = create_app("test")
@@ -10,3 +21,5 @@ class TestPingResource:
         ping = basic_api.get('/ping')
 
         assert ping.status_code == 200
+
+

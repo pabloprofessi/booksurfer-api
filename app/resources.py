@@ -102,66 +102,42 @@ class BookResourceWithId(Resource):
 
 class SampleResource(Resource):
 
-    def book_exists(book_id):
-        if not Book.get(book_id):
-            return False
-        else:
-            return True
-
     @marshal_with(Sample.simple_fields())
-    def get(self, book_id):
-        if book_exists(book_id):
-            response = Sample.query.all()
-        else:
-            response = ({'error': 'book not found'}, 404)
+    def get(self):
+        response = Sample.query.all()
         return response
 
     @marshal_with(Sample.simple_fields())
-    def post(self, book_id):
+    def post(self):
         json_data = request.get_json(force=True)
-        if book_exists(book_id):
-            response = Sample.create(
-                json_data['bookId'], 
-                json_data['acquisitionDate'], 
-                json_data['discardDate'], 
-                json_data['barCode'])
-        else:
-            response = ({'error': 'book not found'}, 404)
-
+        response = Sample.create(
+            json_data['bookId'],
+            json_data['acquisitionDate'], 
+            json_data.get('discardDate',None), 
+            json_data['barCode'])
         return response
 
 class SampleResourceWithId(Resource):
 
     @marshal_with(Sample.simple_fields())
-    def get(self, book_id, sample_id):
-        if book_exists(book_id):
-            response = Sample.get(sample_id)
-        else:
-            response = ({'error': 'book not found'}, 404)
+    def get(self, sample_id):
+        response = Sample.get(sample_id)
         return response
 
     @marshal_with(Sample.simple_fields())
-    def put(self, book_id, sample_id):
+    def put(self, sample_id):
         json_data = request.get_json(force=True)
-        if book_exists(book_id):
-            response = Sample.update(sample_id,
+        response = Sample.update(sample_id,
                 json_data['bookId'], 
                 json_data['acquisitionDate'], 
-                json_data['discardDate'], 
+                json_data.get('discardDate',None),
                 json_data['barCode'])
-        else:
-            response = ({'error': 'book not found'}, 404)
 
         return response
 
     @marshal_with(Sample.simple_fields())
-    def delete(self, book_id, sample_id):
-        if book_exists(book_id):
-            response = Sample.delete(sample_id)
-        else:
-            response = ({'error': 'book not found'}, 404)
-        return response
-
+    def delete(self, sample_id):
+        response = Sample.delete(sample_id)
         return response
 
 
@@ -237,17 +213,17 @@ class LoanResource(Resource):
         response = Loan.create(
             json_data['memberId'],
             json_data['sampleId'],
-            json_data['agreedReturnRate'],
-            json_data['return_date'],
-            json_data['withdraw_date'],
+            json_data['agreedReturnDate'],
+            json_data['returnDate'],
+            json_data['withdrawDate'],
             json_data['comment'])
         return response
 
 class LoanResourceWithId(Resource):
 
     @marshal_with(Sample.simple_fields())
-    def get(self, sample_id):
-        response = Sample.get(sample_id)
+    def get(self, loan_id):
+        response = Loan.get(loan_id)
         return response
 
     @marshal_with(Loan.simple_fields())
@@ -273,8 +249,8 @@ extensions.api.add_resource(AuthorResource, '/authors')
 extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:author_id>')
 extensions.api.add_resource(BookResource, '/books')
 extensions.api.add_resource(BookResourceWithId, '/books/<string:book_id>')
-extensions.api.add_resource(SampleResource, '/books/<string:book_id>/samples')
-extensions.api.add_resource(SampleResourceWithId, '/books/<string:book_id>/samples/<string:sample_id>')
+extensions.api.add_resource(SampleResource, '/samples')
+extensions.api.add_resource(SampleResourceWithId, '/samples/<string:sample_id>')
 extensions.api.add_resource(MemberResource, '/members')
 extensions.api.add_resource(MemberResourceWithId, '/members/<string:member_id>')
 extensions.api.add_resource(LoanResource, '/loans')

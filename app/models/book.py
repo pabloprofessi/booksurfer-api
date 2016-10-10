@@ -59,16 +59,16 @@ class Book(db.Model):
         return Book.query.get(id);
     
     @staticmethod
-    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, authors, samples):
+    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, samples, authors):
         has_one = Book.query.filter_by(isbn=isbn).first()
         if has_one:
             return has_one    
-        new_book = Book(title=title, publisher=publisher,  edition_year=edition_year, edition_country=edition_country, price=price, isbn=isbn, reputation_value=reputation_value)
+        new_book = Book(title=title, publisher=publisher,  edition_year=edition_year, edition_country=edition_country, price=price, isbn=isbn, reputation_value=reputation_value)   
         for a_author in authors:
-            new_author = Author.create(a_author['first_name'], a_author['last_name'],  a_author['nationality'])
+            new_author = Author.create_with_book(a_author['firstName'], a_author['lastName'],  a_author['nationality'])
             new_book.authors.append(new_author)
         for a_sample in samples:
-            new_sample = Sample.create(a_sample['book_id'], a_sample['acquisition_date'], a_sample['withdraw_date'], a_sample['bar_code'])
+            new_sample = Sample.create_with_book(a_sample.get('acquisitionDate'), a_sample.get('discardDate',None), a_sample['barCode'])
             new_book.samples.append(new_sample)
         db.session.add(new_book)
         db.session.commit()
@@ -92,6 +92,10 @@ class Book(db.Model):
     def delete(id):
         book = Book.query.get(id)
         if book:
+            for sample in book.samples:
+                db.session.delete(sample)
+            for author in book.authors:
+                db.session.delete(author)
             db.session.delete(book)
             db.session.commit()
         return book
