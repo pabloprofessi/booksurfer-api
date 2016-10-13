@@ -69,8 +69,9 @@ class BookResource(Resource):
             json_data['price'],
             json_data['isbn'],
             json_data['reputationValue'],
-            json_data['samples'],
-            json_data['authors'])
+            json_data['loanType'],
+            json_data.get('samples',[]),
+            json_data.get('authors', []))
         return response
 
 
@@ -81,7 +82,7 @@ class BookResourceWithId(Resource):
         response = Book.get(book_id)
         return response
 
-    @marshal_with(Book.simple_fields())
+    @marshal_with(Book.with_authors_fields())
     def put(self, book_id):
         json_data = request.get_json(force=True)
         response = Book.update(book_id,
@@ -91,7 +92,9 @@ class BookResourceWithId(Resource):
             json_data['editionCountry'], 
             json_data['price'],
             json_data['isbn'],
-            json_data['reputationValue'])
+            json_data['reputationValue'],
+            json_data['loanType'],
+            json_data.get('authors', []))
         return response
 
     @marshal_with(Book.simple_fields())
@@ -102,7 +105,7 @@ class BookResourceWithId(Resource):
 
 class SampleResource(Resource):
 
-    @marshal_with(Sample.simple_fields())
+    @marshal_with(Sample.complete_fields())
     def get(self):
         response = Sample.query.all()
         return response
@@ -216,12 +219,13 @@ class LoanResource(Resource):
             json_data['agreedReturnDate'],
             json_data['returnDate'],
             json_data['withdrawDate'],
-            json_data['comment'])
+            json_data['comment'],
+            json_data['loanType'])
         return response
 
 class LoanResourceWithId(Resource):
 
-    @marshal_with(Sample.simple_fields())
+    @marshal_with(Loan.simple_fields())
     def get(self, loan_id):
         response = Loan.get(loan_id)
         return response
@@ -235,7 +239,8 @@ class LoanResourceWithId(Resource):
             json_data['agreedReturnDate'],
             json_data['returnDate'],
             json_data['withdrawDate'],
-            json_data['comment'])
+            json_data['comment'],
+            json_data['loanType'])
         return response
 
     @marshal_with(Loan.simple_fields())
@@ -243,6 +248,13 @@ class LoanResourceWithId(Resource):
         response = Loan.delete(loan_id)
         return response
 
+
+class LoansBySampleResource(Resource):
+
+    @marshal_with(Loan.simple_fields())
+    def get(self, sample_id):
+        response = Loan.getBySample(sample_id)
+        return response
 
 extensions.api.add_resource(PingResource, '/ping')
 extensions.api.add_resource(AuthorResource, '/authors')
@@ -255,6 +267,7 @@ extensions.api.add_resource(MemberResource, '/members')
 extensions.api.add_resource(MemberResourceWithId, '/members/<string:member_id>')
 extensions.api.add_resource(LoanResource, '/loans')
 extensions.api.add_resource(LoanResourceWithId, '/loans/<string:loan_id>')
+extensions.api.add_resource(LoansBySampleResource, '/samples/<string:sample_id>/loans')
 
 
 

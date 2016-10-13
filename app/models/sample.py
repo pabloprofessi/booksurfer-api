@@ -2,6 +2,7 @@ from ..extensions import db
 from flask_restful import fields
 import datetime
 
+   
 
 def string_to_date(a_date):
     if a_date:
@@ -15,6 +16,18 @@ class Sample(db.Model):
     acquisition_date =db.Column(db.Date)
     discard_date = db.Column(db.Date)
     bar_code = db.Column(db.String(32))
+
+    @staticmethod
+    def complete_fields():
+        from book import Book
+        return {
+                'id': fields.String,
+                'bookId': fields.String(attribute='book_id'),
+                'book':  fields.Nested(Book.simple_fields()),
+                'acquisitionDate': fields.String(attribute='acquisition_date'),
+                'discardDate': fields.String(attribute='discard_date'),
+                'barCode': fields.String(attribute='bar_code'),
+                }
 
     @staticmethod
     def simple_fields():

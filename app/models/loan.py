@@ -16,6 +16,8 @@ class Loan(db.Model):
     return_date = db.Column(db.Date)
     withdraw_date = db.Column(db.Date)
     comment = db.Column(db.Text)
+    #valores posibles por ahora LOCAL o REMOTE
+    loan_type = db.Column(db.String(10))
 
 
     @staticmethod
@@ -28,6 +30,7 @@ class Loan(db.Model):
         'returnDate' : fields.String(attribute='return_date'),
         'withdrawDate' : fields.String(attribute='withdraw_date'),
         'comment' : fields.String,
+        'loanType': fields.String(attribute='loan_type'),
         }
 
     @staticmethod
@@ -35,20 +38,24 @@ class Loan(db.Model):
         return Loan.query.get(id);
 
     @staticmethod
-    def create(member_id, sample_id, agreed_return_date, return_date, withdraw_date, comment):
+    def getBySample(sample_id):
+        return Loan.query.filter_by(sample_id=sample_id).all()
+
+    @staticmethod
+    def create(member_id, sample_id, agreed_return_date, return_date, withdraw_date, comment, loan_type):
         agreed_return_date = string_to_date(agreed_return_date)
         return_date = string_to_date(return_date)
         withdraw_date = string_to_date(withdraw_date)
         has_one = Loan.query.filter_by(member_id=member_id, sample_id=sample_id).first()
         if has_one:
             return has_one
-        new_one = Loan(member_id=member_id,sample_id=sample_id,agreed_return_date=agreed_return_date,return_date=return_date,withdraw_date=withdraw_date,comment=comment)
+        new_one = Loan(member_id=member_id,sample_id=sample_id,agreed_return_date=agreed_return_date,return_date=return_date,withdraw_date=withdraw_date,comment=comment, loan_type=loan_type)
         db.session.add(new_one)
         db.session.commit()
         return new_one
 
     @staticmethod
-    def update(id, member_id, sample_id, agreed_return_date, return_date, withdraw_date, comment):
+    def update(id, member_id, sample_id, agreed_return_date, return_date, withdraw_date, comment, loan_type):
         loan = Loan.query.get(id)
         agreed_return_date = string_to_date(agreed_return_date)
         return_date = string_to_date(return_date)
@@ -59,7 +66,8 @@ class Loan(db.Model):
             loan.agreed_return_date = agreed_return_date
             loan.return_date = return_date
             loan.withdraw_date = withdraw_date
-            loan.comment = comment            
+            loan.comment = comment   
+            loan.loan_type = loan_type         
         db.session.commit()
         return loan
 

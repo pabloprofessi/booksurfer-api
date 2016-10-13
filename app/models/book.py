@@ -22,6 +22,8 @@ class Book(db.Model):
     price = db.Column(db.String(10))
     isbn = db.Column(db.String(10))
     reputation_value = db.Column(db.Integer)
+    #valores posibles por ahora LOCAL o REMOTE
+    loan_type = db.Column(db.String(10))
 
     
 
@@ -36,6 +38,7 @@ class Book(db.Model):
                 'price': fields.String,
                 'isbn': fields.String,
                 'reputationValue': fields.String(attribute='reputation_value'),
+                'loanType': fields.String(attribute='loan_type'),
                 }
 
 
@@ -50,8 +53,24 @@ class Book(db.Model):
                 'price': fields.String,
                 'isbn': fields.String,
                 'reputationValue': fields.String(attribute='reputation_value'),
+                'loanType': fields.String(attribute='loan_type'),
                 'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
                 'samples': fields.List(fields.Nested(Sample.simple_fields()), attribute='samples'),
+                }
+
+    @staticmethod
+    def with_authors_fields():
+        return {
+                'id': fields.String,
+                'title': fields.String,
+                'publisher': fields.String,
+                'editionYear': fields.String(attribute='edition_year'),
+                'editionCountry': fields.String(attribute='edition_country'),
+                'price': fields.String,
+                'isbn': fields.String,
+                'reputationValue': fields.String(attribute='reputation_value'),
+                'loanType': fields.String(attribute='loan_type'),
+                'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
                 }
 
     @staticmethod
@@ -59,11 +78,18 @@ class Book(db.Model):
         return Book.query.get(id);
     
     @staticmethod
-    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, samples, authors):
+    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type, samples, authors):
         has_one = Book.query.filter_by(isbn=isbn).first()
         if has_one:
             return has_one    
-        new_book = Book(title=title, publisher=publisher,  edition_year=edition_year, edition_country=edition_country, price=price, isbn=isbn, reputation_value=reputation_value)   
+        new_book = Book(title=title, 
+                        publisher=publisher,  
+                        edition_year=edition_year, 
+                        edition_country=edition_country, 
+                        price=price, 
+                        isbn=isbn, 
+                        reputation_value=reputation_value,
+                        loan_type=loan_type)   
         for a_author in authors:
             new_author = Author.create_with_book(a_author['firstName'], a_author['lastName'],  a_author['nationality'])
             new_book.authors.append(new_author)
@@ -75,9 +101,16 @@ class Book(db.Model):
         return new_book
 
     @staticmethod
-    def update(id, title, publisher, edition_year, edition_country, price, isbn, reputation_value):
+    def update(id, title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type, authors):
         book = Book.query.get(id)
         if book:
+            #for a_author in book.authors:
+            #    db.session.delete(a_author)
+            #book.authors = []
+            #db.session.commit()
+            for a_author in authors:
+                new_author = Author.create_with_book(a_author['firstName'], a_author['lastName'],  a_author['nationality'])
+                book.authors.append(new_author)
             book.title = title 
             book.publisher = publisher 
             book.edition_year = edition_year 
@@ -85,6 +118,7 @@ class Book(db.Model):
             book.price = price
             book.isbn = isbn
             book.reputation_value = reputation_value
+            book.loan_type = loan_type
         db.session.commit()
         return book
 
@@ -92,10 +126,10 @@ class Book(db.Model):
     def delete(id):
         book = Book.query.get(id)
         if book:
+            book.authors = []
+            db.session.commit()
             for sample in book.samples:
                 db.session.delete(sample)
-            for author in book.authors:
-                db.session.delete(author)
             db.session.delete(book)
             db.session.commit()
         return book

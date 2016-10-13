@@ -65,6 +65,7 @@ book_data_post = {
     "price" : "10.10",
     "isbn" : "1234567890", 
     "reputationValue" : "9",
+    "loanType": "LOCAL",
     "samples" : [sample_data_post, sample_data_put],
     "authors" : [author_data_post, author_data_put] 
     }
@@ -77,6 +78,8 @@ book_data_put = {
     "price" : "90.10",
     "isbn" : "9999999999", 
     "reputationValue" : "10",
+    "loanType": "REMOTE",
+    "authors" : [author_data_post, author_data_put] 
     }
 
 test_entity(book_entity, book_data_post, book_data_put)
@@ -84,7 +87,7 @@ test_entity(book_entity, book_data_post, book_data_put)
 #SAMPLE
 
 sample_entity = "samples"
-response = requests.post("http://localhost:5000/books", data = json.dumps({"title" : "la mama de los anillos","publisher" : "zauron","editionYear" : "1000","editionCountry" : "mordor","price" : "10.10","isbn" : "1234567890", "reputationValue" : "9","samples" : [],"authors" : [] }), headers={'Content-Type': 'application/json'})
+response = requests.post("http://localhost:5000/books", data = json.dumps({"title" : "la mama de los anillos","publisher" : "zauron","editionYear" : "1000","editionCountry" : "mordor","price" : "10.10","isbn" : "1234567890", "reputationValue" : "9", "loanType": "LOCAL", "samples" : [],"authors" : [] }), headers={'Content-Type': 'application/json'})
 id_created = response.json()['id']
 sample_data_post["bookId"] = id_created
 sample_data_put["bookId"] = id_created
@@ -125,23 +128,26 @@ member_entity = "members"
 
 test_entity(member_entity, member_data_post, member_data_put)
 
+#LOANS
 
 loan_data_post = {
         'agreedReturnDate' :  "2016-10-24",
         'returnDate' : None,
         'withdrawDate' : "2016-10-22",
         'comment' : "aguante tangalanga",
+        "loanType": "LOCAL",
         }
 loan_data_put = {
         'agreedReturnDate' :  "2016-10-24",
         'returnDate' : "2016-10-22",
         'withdrawDate' : "2016-10-04",
-        'comment' : "aguante tangalanga el regreso"
+        'comment' : "aguante tangalanga el regreso",
+        "loanType": "REMOTE",
         }
 loan_entity = "loans"
 
 
-response = requests.post("http://localhost:5000/books", data = json.dumps({"title" : "la mama de los anillos","publisher" : "zauron","editionYear" : "1000","editionCountry" : "mordor","price" : "10.10","isbn" : "1234567890", "reputationValue" : "9","samples" : [],"authors" : [] }), headers={'Content-Type': 'application/json'})
+response = requests.post("http://localhost:5000/books", data = json.dumps({"title" : "la mama de los anillos","publisher" : "zauron","editionYear" : "1000","editionCountry" : "mordor","price" : "10.10","isbn" : "1234567890", "reputationValue" : "9", "loanType": "LOCAL","samples" : [],"authors" : [] }), headers={'Content-Type': 'application/json'})
 sample_data_post["bookId"] = response.json()['id']
 
 response = requests.post("http://localhost:5000/samples", data = json.dumps(sample_data_post), headers={'Content-Type': 'application/json'})
@@ -155,9 +161,39 @@ loan_data_post['memberId'] = member_id_created
 loan_data_put['sampleId'] = sample_id_created
 loan_data_put['memberId'] = member_id_created
 
+
 test_entity(loan_entity, loan_data_post, loan_data_put)
 
 response = requests.delete("http://localhost:5000/books/" + sample_data_post["bookId"], headers={'Content-Type': 'application/json'})
 response = requests.delete("http://localhost:5000/members/" + member_id_created, headers={'Content-Type': 'application/json'})
 
+##################################
+#SPECIAL CASES
+################
+#/samples/<sample_id>/loans
+
+pprint("######################### /samples/<sample_id>/loans ##########################")
+response = requests.post("http://localhost:5000/books", data = json.dumps({"title" : "la mama de los anillos","publisher" : "zauron","editionYear" : "1000","editionCountry" : "mordor","price" : "10.10","isbn" : "1234567890", "reputationValue" : "9", "loanType":"LOCAL", "samples" : [],"authors" : [] }), headers={'Content-Type': 'application/json'})
+sample_data_post["bookId"] = response.json()['id']
+
+response = requests.post("http://localhost:5000/samples", data = json.dumps(sample_data_post), headers={'Content-Type': 'application/json'})
+sample_id_created = response.json()['id']
+
+response = requests.post("http://localhost:5000/members", data = json.dumps(member_data_post), headers={'Content-Type': 'application/json'})
+member_id_created = response.json()['id']
+
+loan_data_post['sampleId'] = sample_id_created
+loan_data_post['memberId'] = member_id_created
+
+response = requests.post("http://localhost:5000/loans", data = json.dumps(loan_data_post), headers={'Content-Type': 'application/json'})
+
+new_loan_id = response.json()['id']
+
+response = requests.get("http://localhost:5000/samples/" + sample_id_created + "/loans", headers={'Content-Type': 'application/json'})
+
+pprint(response.json())
+response = requests.delete("http://localhost:5000/loans/" + new_loan_id , headers={'Content-Type': 'application/json'})
+response = requests.delete("http://localhost:5000/samples/" + sample_id_created , headers={'Content-Type': 'application/json'})
+response = requests.delete("http://localhost:5000/books/" + sample_data_post["bookId"], headers={'Content-Type': 'application/json'})
+response = requests.delete("http://localhost:5000/members/" + member_id_created, headers={'Content-Type': 'application/json'})
 
