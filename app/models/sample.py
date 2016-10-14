@@ -22,7 +22,6 @@ class Sample(db.Model):
         from book import Book
         return {
                 'id': fields.String,
-                'bookId': fields.String(attribute='book_id'),
                 'book':  fields.Nested(Book.simple_fields()),
                 'acquisitionDate': fields.String(attribute='acquisition_date'),
                 'discardDate': fields.String(attribute='discard_date'),
@@ -66,15 +65,13 @@ class Sample(db.Model):
         return new_sample
 
     @staticmethod
-    def update(id, book_id, acquisition_date, discard_date, bar_code):
+    def update(id, acquisition_date, discard_date, bar_code):
         sample = Sample.query.get(id)
         if acquisition_date:
             acquisition_date = datetime.datetime.strptime(acquisition_date, '%Y-%m-%d').date()
         if discard_date:
             discard_date = datetime.datetime.strptime(discard_date, '%Y-%m-%d').date() 
-
         if sample:
-            sample.book_id = book_id 
             sample.acquisition_date = acquisition_date 
             sample.discard_date = discard_date 
             sample.bar_code = bar_code 

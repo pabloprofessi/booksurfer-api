@@ -45,6 +45,26 @@ class Member(db.Model):
         }
 
     @staticmethod
+    def complete_fields():
+        return {
+            'id' : fields.String,
+            'firstName' : fields.String(attribute='first_name'),
+            'lastName' : fields.String(attribute='last_name'),
+            'dni' : fields.String,
+            'nationality' : fields.String,
+            'cuil' : fields.String,
+            'phone' : fields.String,
+            'email' : fields.String,
+            'zipCode' : fields.String(attribute='zip_code'),
+            'city' : fields.String,
+            'state' : fields.String,
+            'enabled' : fields.String,
+            'reputation' : fields.String,
+            'loans': fields.List(fields.Nested(Loans.simple_fields()), attribute='loans'),
+        }
+
+
+    @staticmethod
     def get(id):
         return Member.query.get(id);
 

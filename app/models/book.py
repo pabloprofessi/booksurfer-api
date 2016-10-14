@@ -58,27 +58,44 @@ class Book(db.Model):
                 'samples': fields.List(fields.Nested(Sample.simple_fields()), attribute='samples'),
                 }
 
-    @staticmethod
-    def with_authors_fields():
-        return {
-                'id': fields.String,
-                'title': fields.String,
-                'publisher': fields.String,
-                'editionYear': fields.String(attribute='edition_year'),
-                'editionCountry': fields.String(attribute='edition_country'),
-                'price': fields.String,
-                'isbn': fields.String,
-                'reputationValue': fields.String(attribute='reputation_value'),
-                'loanType': fields.String(attribute='loan_type'),
-                'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
-                }
 
     @staticmethod
     def get(id):
         return Book.query.get(id);
+
+
+    @staticmethod
+    def create_author_assoc(book_id, author_id):
+        a_book = Book.query.get(book_id)
+        if a_book:
+            a_author = Author.query.get(author_id)
+            if a_author:
+                a_book.authors.append(a_author)
+                db.session.commit()  
+            else:
+                return 'author not found', 400    
+        else:
+            return 'book not found', 400
+
+        return 'book author asossiatio generated', 200
+
+    @staticmethod
+    def delete_author_assoc(book_id, author_id):
+        a_book = Book.query.get(book_id)
+        if a_book:
+            a_author = Author.query.get(author_id)
+            if (a_author in a_book.authors):
+                a_book.authors.remove(a_author)
+                db.session.commit()  
+            else:
+                return 'author not found', 400    
+        else:
+            return 'book not found', 400
+
+        return 'book author asossiatio generated', 200
     
     @staticmethod
-    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type, samples, authors):
+    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type):
         has_one = Book.query.filter_by(isbn=isbn).first()
         if has_one:
             return has_one    
@@ -90,27 +107,14 @@ class Book(db.Model):
                         isbn=isbn, 
                         reputation_value=reputation_value,
                         loan_type=loan_type)   
-        for a_author in authors:
-            new_author = Author.create_with_book(a_author['firstName'], a_author['lastName'],  a_author['nationality'])
-            new_book.authors.append(new_author)
-        for a_sample in samples:
-            new_sample = Sample.create_with_book(a_sample.get('acquisitionDate'), a_sample.get('discardDate',None), a_sample['barCode'])
-            new_book.samples.append(new_sample)
         db.session.add(new_book)
         db.session.commit()
         return new_book
 
     @staticmethod
-    def update(id, title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type, authors):
+    def update(id, title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type):
         book = Book.query.get(id)
         if book:
-            #for a_author in book.authors:
-            #    db.session.delete(a_author)
-            #book.authors = []
-            #db.session.commit()
-            for a_author in authors:
-                new_author = Author.create_with_book(a_author['firstName'], a_author['lastName'],  a_author['nationality'])
-                book.authors.append(new_author)
             book.title = title 
             book.publisher = publisher 
             book.edition_year = edition_year 

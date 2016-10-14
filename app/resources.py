@@ -11,9 +11,9 @@ from models import Member
 from models import Loan
 
 class PingResource(Resource):
-
     def get(self):
         return "pong"
+
 class AuthorResource(Resource):
 
     @marshal_with(Author.simple_fields())
@@ -69,9 +69,7 @@ class BookResource(Resource):
             json_data['price'],
             json_data['isbn'],
             json_data['reputationValue'],
-            json_data['loanType'],
-            json_data.get('samples',[]),
-            json_data.get('authors', []))
+            json_data['loanType'])
         return response
 
 
@@ -82,7 +80,7 @@ class BookResourceWithId(Resource):
         response = Book.get(book_id)
         return response
 
-    @marshal_with(Book.with_authors_fields())
+    @marshal_with(Book.simple_fields())
     def put(self, book_id):
         json_data = request.get_json(force=True)
         response = Book.update(book_id,
@@ -93,8 +91,7 @@ class BookResourceWithId(Resource):
             json_data['price'],
             json_data['isbn'],
             json_data['reputationValue'],
-            json_data['loanType'],
-            json_data.get('authors', []))
+            json_data['loanType'])
         return response
 
     @marshal_with(Book.simple_fields())
@@ -131,7 +128,6 @@ class SampleResourceWithId(Resource):
     def put(self, sample_id):
         json_data = request.get_json(force=True)
         response = Sample.update(sample_id,
-                json_data['bookId'], 
                 json_data['acquisitionDate'], 
                 json_data.get('discardDate',None),
                 json_data['barCode'])
@@ -256,11 +252,28 @@ class LoansBySampleResource(Resource):
         response = Loan.getBySample(sample_id)
         return response
 
+
+class BookAuthorAsossiationResource(Resource):
+
+    def post(self, book_id, author_id):
+        print("asdasdads")
+        response = Book.create_author_assoc(book_id, author_id)
+        return response
+
+    def delete(self, book_id, author_id):
+        response = Book.delete_author_assoc(book_id, author_id)
+        return response
+
+
+
 extensions.api.add_resource(PingResource, '/ping')
 extensions.api.add_resource(AuthorResource, '/authors')
 extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:author_id>')
 extensions.api.add_resource(BookResource, '/books')
 extensions.api.add_resource(BookResourceWithId, '/books/<string:book_id>')
+
+extensions.api.add_resource(BookAuthorAsossiationResource, '/books/<string:book_id>/authors/<string:author_id>')
+
 extensions.api.add_resource(SampleResource, '/samples')
 extensions.api.add_resource(SampleResourceWithId, '/samples/<string:sample_id>')
 extensions.api.add_resource(MemberResource, '/members')

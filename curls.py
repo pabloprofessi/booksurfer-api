@@ -66,8 +66,6 @@ book_data_post = {
     "isbn" : "1234567890", 
     "reputationValue" : "9",
     "loanType": "LOCAL",
-    "samples" : [sample_data_post, sample_data_put],
-    "authors" : [author_data_post, author_data_put] 
     }
 
 book_data_put = {
@@ -79,7 +77,6 @@ book_data_put = {
     "isbn" : "9999999999", 
     "reputationValue" : "10",
     "loanType": "REMOTE",
-    "authors" : [author_data_post, author_data_put] 
     }
 
 test_entity(book_entity, book_data_post, book_data_put)
