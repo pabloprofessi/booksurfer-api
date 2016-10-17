@@ -208,7 +208,6 @@ class LoanResource(Resource):
         response = Loan.create(
             json_data['memberId'],
             json_data['sampleId'],
-            json_data['agreedReturnDate'],
             json_data['returnDate'],
             json_data['withdrawDate'],
             json_data['comment'],

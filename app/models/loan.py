@@ -51,7 +51,7 @@ class Loan(db.Model):
 
     @staticmethod
     def create(member_id, sample_id, return_date, withdraw_date, comment, loan_type):
-        if loan_logic.loan_is_allowed_for_member(member_id):
+        if loan_logic.loan_is_allowed_for_member(member_id, sample_id):
             return_date = string_to_date(return_date)
             withdraw_date = string_to_date(withdraw_date)
             agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
