@@ -258,6 +258,13 @@ class BookAuthorAsossiationResource(Resource):
         response = Book.delete_author_assoc(book_id, author_id)
         return response
 
+class LoansByMemberResource(Resource):
+
+    @marshal_with(Loan.simple_fields())
+    def get(self, member_id):
+        response = Loan.get_loans_by_member(member_id)
+        return response
+
 
 
 extensions.api.add_resource(PingResource, '/ping')
@@ -276,6 +283,6 @@ extensions.api.add_resource(LoanResource, '/loans')
 extensions.api.add_resource(LoanResourceWithId, '/loans/<string:loan_id>')
 extensions.api.add_resource(LoansBySampleResource, '/samples/<string:sample_id>/loans')
 
-
+extensions.api.add_resource(LoansByMemberResource, '/members/<string:member_id>/loans')
 
 
