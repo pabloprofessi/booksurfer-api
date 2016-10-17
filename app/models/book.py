@@ -131,7 +131,6 @@ class Book(db.Model):
         book = Book.query.get(id)
         if book:
             book.authors = []
-            db.session.commit()
             for sample in book.samples:
                 db.session.delete(sample)
             db.session.delete(book)

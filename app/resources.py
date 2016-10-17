@@ -16,7 +16,7 @@ class PingResource(Resource):
 
 class AuthorResource(Resource):
 
-    @marshal_with(Author.simple_fields())
+    @marshal_with(Author.complete_fields())
     def get(self):
         response = Author.query.all()
         return response
@@ -32,7 +32,7 @@ class AuthorResource(Resource):
 
 class AuthorResourceWithId(Resource):
 
-    @marshal_with(Author.simple_fields())
+    @marshal_with(Author.complete_fields())
     def get(self, author_id):
         response = Author.get(author_id)
         return response
@@ -140,8 +140,6 @@ class SampleResourceWithId(Resource):
         return response
 
 
-
-
 class MemberResource(Resource):
 
     @marshal_with(Member.simple_fields())
@@ -163,8 +161,7 @@ class MemberResource(Resource):
             json_data['zipCode'],
             json_data['city'],
             json_data['state'],
-            json_data['enabled'],
-            json_data['reputation'])
+            json_data['enabled'])
         return response
 
 class MemberResourceWithId(Resource):
@@ -188,8 +185,7 @@ class MemberResourceWithId(Resource):
             json_data['zipCode'],
             json_data['city'],
             json_data['state'],
-            json_data['enabled'],
-            json_data['reputation'])
+            json_data['enabled'])
         return response
 
     @marshal_with(Member.simple_fields())
@@ -249,14 +245,13 @@ class LoansBySampleResource(Resource):
 
     @marshal_with(Loan.simple_fields())
     def get(self, sample_id):
-        response = Loan.getBySample(sample_id)
+        response = Loan.get_by_sample(sample_id)
         return response
 
 
 class BookAuthorAsossiationResource(Resource):
 
     def post(self, book_id, author_id):
-        print("asdasdads")
         response = Book.create_author_assoc(book_id, author_id)
         return response
 

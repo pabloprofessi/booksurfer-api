@@ -17,6 +17,18 @@ class Author(db.Model):
                 'nationality': fields.String,
                 }
 
+    @staticmethod            
+    def complete_fields():
+        from book import Book
+        return {
+                'id': fields.String,
+                'firstName': fields.String(attribute='first_name'),
+                'lastName': fields.String(attribute='last_name'),
+                'nationality': fields.String,
+                'books': fields.List(fields.Nested(Book.simple_fields()), attribute='books'),
+                }
+
+
     @staticmethod
     def get(id):
         return Author.query.get(id);
