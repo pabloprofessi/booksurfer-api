@@ -25,7 +25,7 @@ class Member(db.Model):
     city = db.Column(db.String(100))
     state = db.Column(db.String(100))
     enabled = db.Column(db.Boolean, default=True)
-    reputation = db.Column(db.Integer, default=7)
+    reputation = db.Column(db.Float, default=7)
     erased = db.Column(db.Boolean, default=False)
     authorized_to_loan = db.Column(db.Boolean, default=True)
 
@@ -45,7 +45,7 @@ class Member(db.Model):
             'city' : fields.String,
             'state' : fields.String,
             'enabled' : fields.String,
-            'reputation' : fields.String,
+            'reputation' : fields.Float,
             'authorizedToLoan' : fields.String(attribute='authorized_to_loan'),
 
 
@@ -66,7 +66,7 @@ class Member(db.Model):
             'city' : fields.String,
             'state' : fields.String,
             'enabled' : fields.String,
-            'reputation' : fields.String,
+            'reputation' : fields.Float,
             'authorizedToLoan' : fields.String(attribute='authorized_to_loan'),
             'loans': fields.List(fields.Nested(Loans.simple_fields()), attribute='loans'),
         }

@@ -17,12 +17,12 @@ class Book(db.Model):
     samples = db.relationship('Sample', backref='book', lazy='dynamic', uselist=True)
     title = db.Column(db.String(200))
     publisher = db.Column(db.String(200))
-    edition_year = db.Column(db.String(4))
+    edition_year = db.Column(db.Integer)
     edition_country = db.Column(db.String(64))
-    price = db.Column(db.String(10))
-    isbn = db.Column(db.String(10))
+    price = db.Column(db.Float)
+    isbn = db.Column(db.String(13))
     gender = db.Column(db.String(100))
-    reputation_value = db.Column(db.Integer)
+    reputation_value = db.Column(db.Float)
     erased = db.Column(db.Boolean, default=False)
     #valores posibles por ahora LOCAL o REMOTE
     loan_type = db.Column(db.String(10))
@@ -35,12 +35,12 @@ class Book(db.Model):
                 'id': fields.String,
                 'title': fields.String,
                 'publisher': fields.String,
-                'editionYear': fields.String(attribute='edition_year'),
+                'editionYear': fields.Integer(attribute='edition_year'),
                 'editionCountry': fields.String(attribute='edition_country'),
-                'price': fields.String,
+                'price': fields.Float,
                 'isbn': fields.String,
                 'gender': fields.String,
-                'reputationValue': fields.String(attribute='reputation_value'),
+                'reputationValue': fields.Float(attribute='reputation_value'),
                 'loanType': fields.String(attribute='loan_type'),
                 }
 
@@ -51,12 +51,12 @@ class Book(db.Model):
                 'id': fields.String,
                 'title': fields.String,
                 'publisher': fields.String,
-                'editionYear': fields.String(attribute='edition_year'),
+                'editionYear': fields.Integer(attribute='edition_year'),
                 'editionCountry': fields.String(attribute='edition_country'),
-                'price': fields.String,
+                'price': fields.Float,
                 'isbn': fields.String,
                 'gender': fields.String,
-                'reputationValue': fields.String(attribute='reputation_value'),
+                'reputationValue': fields.Float(attribute='reputation_value'),
                 'loanType': fields.String(attribute='loan_type'),
                 'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
                 'samples': fields.List(fields.Nested(Sample.simple_fields()), attribute='samples'),

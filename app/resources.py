@@ -12,6 +12,7 @@ from models import Loan
 
 import datetime
 
+
 class PingResource(Resource):
     def get(self):
         return "pong"
@@ -111,7 +112,7 @@ class SampleResource(Resource):
         response = Sample.get_all()
         return response
 
-    @marshal_with(Sample.simple_fields())
+    #@marshal_with(Sample.simple_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Sample.create(
@@ -119,7 +120,8 @@ class SampleResource(Resource):
             json_data['acquisitionDate'], 
             json_data.get('discardDate',None), 
             json_data['barCode'])
-        return response
+        if response[1] == 400: return response
+        return marshal(response[0], Sample.simple_fields()), response[1]
 
 class SampleResourceWithId(Resource):
 
