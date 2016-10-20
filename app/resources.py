@@ -120,8 +120,13 @@ class SampleResource(Resource):
             json_data['acquisitionDate'], 
             json_data.get('discardDate',None), 
             json_data['barCode'])
-        if response[1] == 400: return response
-        return marshal(response[0], Sample.simple_fields()), response[1]
+        if type(response) is Sample:
+            @marshal_with(Sample.simple_fields())
+            def good_response(response):return response
+            return good_response(response)
+        else:
+            return json.dumps(response[0]), response[1]
+        
 
 class SampleResourceWithId(Resource):
 
