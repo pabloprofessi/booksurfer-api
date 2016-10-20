@@ -21,7 +21,9 @@ class Book(db.Model):
     edition_country = db.Column(db.String(64))
     price = db.Column(db.String(10))
     isbn = db.Column(db.String(10))
+    gender = db.Column(db.String(100))
     reputation_value = db.Column(db.Integer)
+    erased = db.Column(db.Boolean, default=False)
     #valores posibles por ahora LOCAL o REMOTE
     loan_type = db.Column(db.String(10))
 
@@ -37,6 +39,7 @@ class Book(db.Model):
                 'editionCountry': fields.String(attribute='edition_country'),
                 'price': fields.String,
                 'isbn': fields.String,
+                'gender': fields.String,
                 'reputationValue': fields.String(attribute='reputation_value'),
                 'loanType': fields.String(attribute='loan_type'),
                 }
@@ -52,6 +55,7 @@ class Book(db.Model):
                 'editionCountry': fields.String(attribute='edition_country'),
                 'price': fields.String,
                 'isbn': fields.String,
+                'gender': fields.String,
                 'reputationValue': fields.String(attribute='reputation_value'),
                 'loanType': fields.String(attribute='loan_type'),
                 'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
@@ -65,6 +69,10 @@ class Book(db.Model):
 
 
     @staticmethod
+    def get_all():
+        return Book.query.filter_by(erased=False).all()
+
+    @staticmethod
     def create_author_assoc(book_id, author_id):
         a_book = Book.query.get(book_id)
         if a_book:
@@ -73,11 +81,11 @@ class Book(db.Model):
                 a_book.authors.append(a_author)
                 db.session.commit()  
             else:
-                return 'author not found', 400    
+                return 'Autor no encontrado.', 400    
         else:
-            return 'book not found', 400
+            return 'Libro no encontrado.', 400
 
-        return 'book author asossiatio generated', 200
+        return 'Asociacion entre libro y autor generada.', 200
 
     @staticmethod
     def delete_author_assoc(book_id, author_id):
@@ -88,14 +96,22 @@ class Book(db.Model):
                 a_book.authors.remove(a_author)
                 db.session.commit()  
             else:
-                return 'author not found', 400    
+                return 'Autor no encontrado.', 400    
         else:
-            return 'book not found', 400
+            return 'Libro no encontrado.', 400
 
-        return 'book author asossiatio generated', 200
+        return 'Asociacion entre libro y autor eliminada.', 200
     
     @staticmethod
-    def create(title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type):
+    def create(title, 
+              publisher, 
+              edition_year, 
+              edition_country, 
+              price, 
+              isbn, 
+              gender,
+              reputation_value, 
+              loan_type):
         has_one = Book.query.filter_by(isbn=isbn).first()
         if has_one:
             return has_one    
@@ -104,7 +120,8 @@ class Book(db.Model):
                         edition_year=edition_year, 
                         edition_country=edition_country, 
                         price=price, 
-                        isbn=isbn, 
+                        isbn=isbn,
+                        gender=gender, 
                         reputation_value=reputation_value,
                         loan_type=loan_type)   
         db.session.add(new_book)
@@ -112,7 +129,16 @@ class Book(db.Model):
         return new_book
 
     @staticmethod
-    def update(id, title, publisher, edition_year, edition_country, price, isbn, reputation_value, loan_type):
+    def update(id, 
+              title, 
+              publisher, 
+              edition_year, 
+              edition_country, 
+              price, 
+              isbn,
+              gender, 
+              reputation_value, 
+              loan_type):
         book = Book.query.get(id)
         if book:
             book.title = title 
@@ -121,6 +147,7 @@ class Book(db.Model):
             book.edition_country = edition_country
             book.price = price
             book.isbn = isbn
+            book.gender = gender
             book.reputation_value = reputation_value
             book.loan_type = loan_type
         db.session.commit()
@@ -131,8 +158,11 @@ class Book(db.Model):
         book = Book.query.get(id)
         if book:
             book.authors = []
+            book.samples = True
             for sample in book.samples:
-                db.session.delete(sample)
+                if sample.is_loaned:
+                    return 'El libro tiene el ejemplar, con el codigo de barra: ' + sample.bar_code + ' ya prestado'  , 400
+                Sample.delete(sample.id)
             db.session.delete(book)
             db.session.commit()
         return book

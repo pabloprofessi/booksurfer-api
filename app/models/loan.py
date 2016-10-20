@@ -50,9 +50,12 @@ class Loan(db.Model):
         return Loan.query.filter_by(sample_id=sample_id).all()
 
     @staticmethod
-    def create(member_id, sample_id, return_date, withdraw_date, comment, loan_type):
+    def get_pending_loan_by_sample(sample_id):
+        return Loan.query.filter_by(sample_id=sample_id, return_date=None).first()
+
+    @staticmethod
+    def create(member_id, sample_id, withdraw_date, comment, loan_type):
         if loan_logic.loan_is_allowed_for_member(member_id, sample_id):
-            return_date = string_to_date(return_date)
             withdraw_date = string_to_date(withdraw_date)
             agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
             has_one = Loan.query.filter_by(member_id=member_id, sample_id=sample_id).first()
@@ -62,25 +65,20 @@ class Loan(db.Model):
             db.session.add(new_one)
             db.session.commit()
         else:
-            return 'member is no allowed to get any sample', 400
+            return 'El socio no esta hablitado para tener prestamos.', 400
         return new_one
 
     @staticmethod
-    def update(id, member_id, sample_id, agreed_return_date, return_date, withdraw_date, comment, loan_type):
+    def update(id, return_date, comment):
         loan = Loan.get(id)
         if loan:
             agreed_return_date = string_to_date(agreed_return_date)
             return_date = string_to_date(return_date)
-            withdraw_date = string_to_date(withdraw_date)
-            loan.member_id = member_id
-            loan.sample_id = sample_id
             loan.agreed_return_date = agreed_return_date
             loan.return_date = return_date
-            loan.withdraw_date = withdraw_date
             loan.comment = comment   
-            loan.loan_type = loan_type
-            if loan_type == 'REMOTE':
-                loan_logic.get_updated_member_reputation(member_id)         
+            if loan.loan_type == 'REMOTE':
+                loan_logic.get_updated_member_reputation(loan.member_id)         
             db.session.commit()
         return loan
 

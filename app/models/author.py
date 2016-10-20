@@ -56,8 +56,14 @@ class Author(db.Model):
 
     @staticmethod
     def delete(id):
+        from book import Book
         author = Author.query.get(id)
         if author:
+            for book in author.books:
+                if not book.erased:
+                    return 'El autor tiene libros asociados.', 400
+            for book in author.books:
+                Book.delete_author_assoc(book.id, author.id)
             db.session.delete(author)
             db.session.commit()
         return author

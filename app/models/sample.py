@@ -2,9 +2,6 @@ from ..extensions import db
 from flask_restful import fields
 import datetime
 
-
-   
-
 def string_to_date(a_date):
     if a_date:
         a_date = datetime.datetime.strptime(a_date, '%Y-%m-%d').date()
@@ -17,6 +14,7 @@ class Sample(db.Model):
     acquisition_date =db.Column(db.Date)
     discard_date = db.Column(db.Date)
     bar_code = db.Column(db.String(32))
+    erased = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def complete_fields():
@@ -27,6 +25,7 @@ class Sample(db.Model):
                 'acquisitionDate': fields.String(attribute='acquisition_date'),
                 'discardDate': fields.String(attribute='discard_date'),
                 'barCode': fields.String(attribute='bar_code'),
+                'availableForLoan': fields.String(attribute='available_for_loan'),
                 }
 
     @staticmethod
@@ -37,11 +36,19 @@ class Sample(db.Model):
                 'acquisitionDate': fields.String(attribute='acquisition_date'),
                 'discardDate': fields.String(attribute='discard_date'),
                 'barCode': fields.String(attribute='bar_code'),
+                'availableForLoan': fields.String(attribute='available_for_loan'),
                 }
 
     @staticmethod
     def get(id):
         return Sample.query.get(id)
+
+
+    @staticmethod
+    def get_all():
+        return Sample.query.filter_by(erased=False).all()
+
+
     
     @staticmethod
     def create(book_id, acquisition_date, discard_date, bar_code):
@@ -49,7 +56,7 @@ class Sample(db.Model):
         discard_date = string_to_date(discard_date)
         has_one = Sample.query.filter_by(book_id=book_id, acquisition_date=acquisition_date, bar_code=bar_code).first()
         if has_one:
-            return has_one    
+            return 'Ya tienes un ejemplar con ese codigo de barra!', 400    
         new_sample = Sample(book_id=book_id, acquisition_date=acquisition_date, discard_date=discard_date, bar_code=bar_code)
         db.session.add(new_sample)
         db.session.commit()
@@ -83,6 +90,24 @@ class Sample(db.Model):
     def delete(id):
         sample = Sample.query.get(id)
         if sample:
-            db.session.delete(sample)
+            if sample.is_loaned: 
+                return 'El ejemplar no puede ser borado, ha sido prestado.', 400
+            sample.erased = True
             db.session.commit()
         return sample
+
+    @property
+    def available_for_loan(self):
+        from loan import Loan
+        a_loan = Loan.get_pending_loan_by_sample(self.id)
+        if a_loan:
+            return False
+        if self.discard_date:
+            return False
+        return True
+
+    @property
+    def is_loaned(self):
+        from loan import Loan
+        return Loan.get_pending_loan_by_sample(self.id) == None
+        

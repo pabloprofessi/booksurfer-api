@@ -10,6 +10,8 @@ from models import Sample
 from models import Member
 from models import Loan
 
+import datetime
+
 class PingResource(Resource):
     def get(self):
         return "pong"
@@ -55,7 +57,7 @@ class BookResource(Resource):
 
     @marshal_with(Book.complete_fields())
     def get(self):
-        response = Book.query.all()
+        response = Book.get_all()
         return response
 
     @marshal_with(Book.complete_fields())
@@ -68,6 +70,7 @@ class BookResource(Resource):
             json_data['editionCountry'], 
             json_data['price'],
             json_data['isbn'],
+            json_data['gender'],
             json_data['reputationValue'],
             json_data['loanType'])
         return response
@@ -90,6 +93,7 @@ class BookResourceWithId(Resource):
             json_data['editionCountry'], 
             json_data['price'],
             json_data['isbn'],
+            json_data['gender'],
             json_data['reputationValue'],
             json_data['loanType'])
         return response
@@ -104,7 +108,7 @@ class SampleResource(Resource):
 
     @marshal_with(Sample.complete_fields())
     def get(self):
-        response = Sample.query.all()
+        response = Sample.get_all()
         return response
 
     @marshal_with(Sample.simple_fields())
@@ -144,7 +148,7 @@ class MemberResource(Resource):
 
     @marshal_with(Member.simple_fields())
     def get(self):
-        response = Member.query.all()
+        response = Member.get_all()
         return response
 
     @marshal_with(Member.simple_fields())
@@ -208,7 +212,6 @@ class LoanResource(Resource):
         response = Loan.create(
             json_data['memberId'],
             json_data['sampleId'],
-            json_data['returnDate'],
             json_data['withdrawDate'],
             json_data['comment'],
             json_data['loanType'])
@@ -225,13 +228,8 @@ class LoanResourceWithId(Resource):
     def put(self, loan_id):
         json_data = request.get_json(force=True)
         response = Loan.update(loan_id,
-            json_data['memberId'],
-            json_data['sampleId'],
-            json_data['agreedReturnDate'],
-            json_data['returnDate'],
-            json_data['withdrawDate'],
-            json_data['comment'],
-            json_data['loanType'])
+            json_data.get(['returnDate'], str(datetime.datetime.now().date())),
+            json_data['comment'])
         return response
 
     @marshal_with(Loan.simple_fields())

@@ -26,6 +26,7 @@ class Member(db.Model):
     state = db.Column(db.String(100))
     enabled = db.Column(db.Boolean, default=True)
     reputation = db.Column(db.Integer, default=7)
+    erased = db.Column(db.Boolean, default=False)
     authorized_to_loan = db.Column(db.Boolean, default=True)
 
 
@@ -79,25 +80,53 @@ class Member(db.Model):
 
     @staticmethod
     def get_all():
-        all_member = Member.query.all()
+        all_member = Member.query.filter_by(erased=False).all()
         for a_member in all_member:
             get_updated_member_reputation(a_member)
         return all_member
 
     @staticmethod
-    def create(first_name, last_name, dni, nationality, cuil, phone, email, zip_code, city, state, enabled):
+    def create(first_name, 
+              last_name, 
+              dni, 
+              nationality, 
+              cuil, 
+              phone, 
+              email, 
+              zip_code, 
+              city, 
+              state, 
+              enabled):
         has_one = Member.query.filter_by(first_name=first_name, last_name=last_name, dni=dni).first()
         if has_one:
             return has_one
-        new_one = Member(first_name=first_name, last_name=last_name, dni=dni, nationality=nationality, 
-                        cuil=cuil, phone=phone, email=email, zip_code=zip_code, city=city, state=state, 
+        new_one = Member(first_name=first_name, 
+                        last_name=last_name, 
+                        dni=dni, 
+                        nationality=nationality, 
+                        cuil=cuil, 
+                        phone=phone, 
+                        email=email, 
+                        zip_code=zip_code, 
+                        city=city, state=state, 
                         enabled=str_to_bool(enabled))
         db.session.add(new_one)
         db.session.commit()
         return new_one
 
     @staticmethod
-    def update(id, first_name, last_name, dni, nationality, cuil, phone, email, zip_code, city, state, enabled):
+    def update(id, 
+              first_name, 
+              last_name, 
+              dni, 
+              nationality, 
+              cuil, 
+              phone, 
+              email, 
+              zip_code, 
+              city, 
+              state, 
+              enabled):
         member = Member.query.get(id)
         get_updated_member_reputation(member)
         if member:
@@ -119,7 +148,9 @@ class Member(db.Model):
     def delete(id):
         member = Member.query.get(id)
         if member:
-            db.session.delete(member)
+            if Loans.get_pending_loans_by_member(member.id): 
+                return 'El miembro no puede ser borrad, tiene prestamos pendientes.',  400
+            member.erased = True
             db.session.commit()
         return member
 

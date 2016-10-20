@@ -18,18 +18,23 @@ def loan_is_allowed_for_member(member_id, sample_id):
     get_updated_member_reputation(a_member)
     a_sample = Sample.get(sample_id)
     a_book = Book.get(a_sample.book_id)
+
+    if (not a_book.erased) and (not a_sample.erased) and (not a_member.erased):
+        return False, "Libro ejemplar o socio han sido borrados."
+    if a_sample.discard_date:
+        return False, "El ejemplar ha sido descartado."
     if not member_is_enabled(a_member):
-        return False, "memeber is not available to loan"
+        return False, "El socio no esta habilitado para recibir prestamos."
     if not book_is_loanable(a_book):
-        return False,  "book is not available for a REMOTE loan"
+        return False,  "El libro no esta habilitado para prestamos remotos."
     if not allowed_by_book_puntuation(a_member, a_book):
-        return False,  "book reputation is to high to loan"
+        return False,  "La reputacion del libro es demasiado alta para ser prestado a ese socio."
     if debt_more_than_three_books(member_id):
         update_member_to_loan(a_member, False)
-        return False, "memeber debts 3 books allready"
+        return False, "El socio ya tiene mas de 3 libros prestados."
     if member_is_suspended(member_id):
         update_member_to_loan(a_member, False)
-        return False, "memeber is suspended until" + str(get_suspention_end_date(a_member))
+        return False, "El socio esta suspendido hasta: " + str(get_suspention_end_date(a_member)) + "."
     update_member_to_loan(a_member, True)
     return True
 
