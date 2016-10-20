@@ -125,7 +125,7 @@ class SampleResource(Resource):
             def good_response(response):return response
             return good_response(response)
         else:
-            return json.dumps(response[0]), response[1]
+            return response[0], response[1]
         
 
 class SampleResourceWithId(Resource):
