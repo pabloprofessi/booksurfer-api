@@ -13,55 +13,65 @@ from models import Loan
 import datetime
 
 
+def simple_response(response, entity_class):
+    if type(response) is entity_class:
+        @marshal_with(entity_class.simple_fields())
+        def good_response(response):return response
+        return good_response(response)
+    else:
+        return response[0], response[1]
+
+def complete_response(response, entity_class):
+    if type(response) is entity_class:
+        @marshal_with(entity_class.complete_fields())
+        def good_response(response):return response
+        return good_response(response)
+    else:
+        return response[0], response[1]
+
+
 class PingResource(Resource):
     def get(self):
         return "pong"
 
 class AuthorResource(Resource):
 
-    @marshal_with(Author.complete_fields())
     def get(self):
         response = Author.query.all()
-        return response
+        return complete_response(response, Author)
 
-    @marshal_with(Author.simple_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Author.create(
             json_data['firstName'], 
             json_data['lastName'], 
             json_data['nationality'])
-        return response
+        return simple_response(response, Author)
 
 class AuthorResourceWithId(Resource):
 
-    @marshal_with(Author.complete_fields())
     def get(self, author_id):
         response = Author.get(author_id)
-        return response
+        return complete_response(response, Author)
 
-    @marshal_with(Author.simple_fields())
     def put(self, author_id):
         json_data = request.get_json(force=True)
         response = Author.update(author_id,
             json_data['firstName'], 
             json_data['lastName'], 
             json_data['nationality'])
-        return response
+        return simple_response(response, Author)
 
-    @marshal_with(Author.simple_fields())
     def delete(self, author_id):
         response = Author.delete(author_id)
-        return response
+        return simple_response(response, Author)
 
 class BookResource(Resource):
 
-    @marshal_with(Book.complete_fields())
     def get(self):
         response = Book.get_all()
-        return response
+        return complete_response(response, Book)
 
-    @marshal_with(Book.complete_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Book.create(
@@ -74,17 +84,15 @@ class BookResource(Resource):
             json_data['gender'],
             json_data['reputationValue'],
             json_data['loanType'])
-        return response
+        return complete_response(response, Book)
 
 
 class BookResourceWithId(Resource):
 
-    @marshal_with(Book.complete_fields())
     def get(self, book_id):
         response = Book.get(book_id)
-        return response
+        return complete_response(response, Book)
 
-    @marshal_with(Book.simple_fields())
     def put(self, book_id):
         json_data = request.get_json(force=True)
         response = Book.update(book_id,
@@ -97,22 +105,19 @@ class BookResourceWithId(Resource):
             json_data['gender'],
             json_data['reputationValue'],
             json_data['loanType'])
-        return response
+        return simple_response(response, Book)
 
-    @marshal_with(Book.simple_fields())
     def delete(self, book_id):
         response = Book.delete(book_id)
-        return response
+        return simple_response(response, Book)
 
 
 class SampleResource(Resource):
 
-    @marshal_with(Sample.complete_fields())
     def get(self):
         response = Sample.get_all()
-        return response
+        return complete_response(response, Sample)
 
-    #@marshal_with(Sample.simple_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Sample.create(
@@ -120,43 +125,33 @@ class SampleResource(Resource):
             json_data['acquisitionDate'], 
             json_data.get('discardDate',None), 
             json_data['barCode'])
-        if type(response) is Sample:
-            @marshal_with(Sample.simple_fields())
-            def good_response(response):return response
-            return good_response(response)
-        else:
-            return response[0], response[1]
+        return simple_response(response, Sample)
         
 
 class SampleResourceWithId(Resource):
 
-    @marshal_with(Sample.simple_fields())
     def get(self, sample_id):
         response = Sample.get(sample_id)
-        return response
+        return simple_response(response, Sample)
 
-    @marshal_with(Sample.simple_fields())
     def put(self, sample_id):
         json_data = request.get_json(force=True)
         response = Sample.update(sample_id,
                 json_data['acquisitionDate'], 
                 json_data.get('discardDate',None),
                 json_data['barCode'])
+        return simple_response(response, Sample)
 
-        return response
-
-    @marshal_with(Sample.simple_fields())
     def delete(self, sample_id):
         response = Sample.delete(sample_id)
-        return response
+        return simple_response(response, Sample)
 
 
 class MemberResource(Resource):
 
-    @marshal_with(Member.simple_fields())
     def get(self):
         response = Member.get_all()
-        return response
+        return simple_response(response, Member)
 
     @marshal_with(Member.simple_fields())
     def post(self):
@@ -173,16 +168,14 @@ class MemberResource(Resource):
             json_data['city'],
             json_data['state'],
             json_data['enabled'])
-        return response
+        return simple_response(response, Member)
 
 class MemberResourceWithId(Resource):
 
-    @marshal_with(Member.simple_fields())
     def get(self, member_id):
         response = Member.get(member_id)
-        return response
+        return simple_response(response, Member)
 
-    @marshal_with(Member.simple_fields())
     def put(self, member_id):
         json_data = request.get_json(force=True)
         response = Member.update(member_id,
@@ -197,23 +190,20 @@ class MemberResourceWithId(Resource):
             json_data['city'],
             json_data['state'],
             json_data['enabled'])
-        return response
+        return simple_response(response, Member)
 
-    @marshal_with(Member.simple_fields())
     def delete(self, member_id):
         response = Member.delete(member_id)
-        return response
+        return simple_response(response, Member)
 
 
 
 class LoanResource(Resource):
 
-    @marshal_with(Loan.simple_fields())
     def get(self):
         response = Loan.query.all()
-        return response
+        return simple_response(response, Loan)
 
-    @marshal_with(Loan.simple_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Loan.create(
@@ -222,35 +212,31 @@ class LoanResource(Resource):
             json_data['withdrawDate'],
             json_data['comment'],
             json_data['loanType'])
-        return response
+        return simple_response(response, Loan)
 
 class LoanResourceWithId(Resource):
 
-    @marshal_with(Loan.simple_fields())
     def get(self, loan_id):
         response = Loan.get(loan_id)
-        return response
+        return simple_response(response, Loan)
 
-    @marshal_with(Loan.simple_fields())
     def put(self, loan_id):
         json_data = request.get_json(force=True)
         response = Loan.update(loan_id,
             json_data.get(['returnDate'], str(datetime.datetime.now().date())),
             json_data['comment'])
-        return response
+        return simple_response(response, Loan)
 
-    @marshal_with(Loan.simple_fields())
     def delete(self, loan_id):
         response = Loan.delete(loan_id)
-        return response
+        return simple_response(response, Loan)
 
 
 class LoansBySampleResource(Resource):
 
-    @marshal_with(Loan.simple_fields())
     def get(self, sample_id):
         response = Loan.get_by_sample(sample_id)
-        return response
+        return simple_response(response, Loan)
 
 
 class BookAuthorAsossiationResource(Resource):
@@ -265,10 +251,9 @@ class BookAuthorAsossiationResource(Resource):
 
 class LoansByMemberResource(Resource):
 
-    @marshal_with(Loan.simple_fields())
     def get(self, member_id):
         response = Loan.get_loans_by_member(member_id)
-        return response
+        return simple_response(response, Loan)
 
 
 

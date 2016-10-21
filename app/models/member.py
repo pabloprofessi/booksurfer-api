@@ -149,7 +149,7 @@ class Member(db.Model):
         member = Member.query.get(id)
         if member:
             if Loans.get_pending_loans_by_member(member.id): 
-                return 'El miembro no puede ser borrad, tiene prestamos pendientes.',  400
+                return { 'message' : 'El miembro no puede ser borrad, tiene prestamos pendientes.' },  400
             member.erased = True
             db.session.commit()
         return member

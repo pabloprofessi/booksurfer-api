@@ -55,7 +55,8 @@ class Loan(db.Model):
 
     @staticmethod
     def create(member_id, sample_id, withdraw_date, comment, loan_type):
-        if loan_logic.loan_is_allowed_for_member(member_id, sample_id):
+        is_allowd_and_reason = loan_logic.loan_is_allowed_for_member(member_id, sample_id)
+        if is_allowd_and_reason[0]:
             withdraw_date = string_to_date(withdraw_date)
             agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
             has_one = Loan.query.filter_by(member_id=member_id, sample_id=sample_id).first()
@@ -65,7 +66,7 @@ class Loan(db.Model):
             db.session.add(new_one)
             db.session.commit()
         else:
-            return 'El socio no esta hablitado para tener prestamos.', 400
+            return {'message' : is_allowd_and_reason[1]}, 400
         return new_one
 
     @staticmethod

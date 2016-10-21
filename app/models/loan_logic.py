@@ -18,25 +18,33 @@ def loan_is_allowed_for_member(member_id, sample_id):
     get_updated_member_reputation(a_member)
     a_sample = Sample.get(sample_id)
     a_book = Book.get(a_sample.book_id)
-
+    is_allowd = True
+    message = ""
     if (not a_book.erased) and (not a_sample.erased) and (not a_member.erased):
-        return False, "Libro ejemplar o socio han sido borrados."
+        is_allowd = False
+        message = message + "Libro ejemplar o socio han sido borrados.\n"
     if a_sample.discard_date:
-        return False, "El ejemplar ha sido descartado."
+        is_allowd = False 
+        message = message + "El ejemplar ha sido descartado.\n"
     if not member_is_enabled(a_member):
-        return False, "El socio no esta habilitado para recibir prestamos."
+        is_allowd = False
+        message = message + "El socio no esta habilitado para recibir prestamos.\n"
     if not book_is_loanable(a_book):
-        return False,  "El libro no esta habilitado para prestamos remotos."
+        is_allowd = False
+        message = message + "El libro no esta habilitado para prestamos remotos.\n"
     if not allowed_by_book_puntuation(a_member, a_book):
-        return False,  "La reputacion del libro es demasiado alta para ser prestado a ese socio."
+        is_allowd = False
+        message = message + "La reputacion del libro es demasiado alta para ser prestado a ese socio.\n"
     if debt_more_than_three_books(member_id):
         update_member_to_loan(a_member, False)
-        return False, "El socio ya tiene mas de 3 libros prestados."
+        is_allowd = False
+        message = message + "El socio ya tiene mas de 3 libros prestados.\n"
     if member_is_suspended(member_id):
         update_member_to_loan(a_member, False)
-        return False, "El socio esta suspendido hasta: " + str(get_suspention_end_date(a_member)) + "."
+        is_allowd = False
+        message = message + "El socio esta suspendido hasta: " + str(get_suspention_end_date(a_member)) + ".\n"
     update_member_to_loan(a_member, True)
-    return True
+    return True, message 
 
 def member_is_enabled(a_member):
     return a_member.enabled
@@ -46,7 +54,7 @@ def book_is_loanable(a_book):
     return a_book.loan_type == 'REMOTE'
 
 def allowed_by_book_puntuation(a_member, a_book):
-    return a_member.reputation >= a_book.reputation
+    return a_member.reputation >= a_book.reputation_value
 
 def debt_more_than_three_books(member_id):
     from loan import Loan

@@ -77,15 +77,15 @@ class Book(db.Model):
         a_book = Book.query.get(book_id)
         if a_book:
             a_author = Author.query.get(author_id)
-            if a_author:
+            if not (a_author in a_book.authors):
                 a_book.authors.append(a_author)
                 db.session.commit()  
             else:
-                return 'Autor no encontrado.', 400    
+                return { 'message' : 'Autor no encontrado.' }, 400    
         else:
-            return 'Libro no encontrado.', 400
+            return { 'message' : 'Libro no encontrado.' }, 400
 
-        return 'Asociacion entre libro y autor generada.', 200
+        return {'message' : 'Asociacion entre libro y autor generada.' }, 200
 
     @staticmethod
     def delete_author_assoc(book_id, author_id):
@@ -96,11 +96,11 @@ class Book(db.Model):
                 a_book.authors.remove(a_author)
                 db.session.commit()  
             else:
-                return 'Autor no encontrado.', 400    
+                return { 'message' : 'Autor no encontrado.' }, 400    
         else:
-            return 'Libro no encontrado.', 400
+            return { 'message' : 'Libro no encontrado.' }, 400
 
-        return 'Asociacion entre libro y autor eliminada.', 200
+        return { 'message' : 'Asociacion entre libro y autor eliminada.' }, 200
     
     @staticmethod
     def create(title, 
@@ -161,7 +161,7 @@ class Book(db.Model):
             book.samples = True
             for sample in book.samples:
                 if sample.is_loaned:
-                    return 'El libro tiene el ejemplar, con el codigo de barra: ' + sample.bar_code + ' ya prestado'  , 400
+                    return { 'message' : 'El libro tiene el ejemplar, con el codigo de barra: ' + sample.bar_code + ' ya prestado' }, 400
                 Sample.delete(sample.id)
             db.session.delete(book)
             db.session.commit()
