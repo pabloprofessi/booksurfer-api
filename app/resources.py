@@ -1,5 +1,5 @@
 import json
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, marshal
 from flask import request
 
 from . import extensions
@@ -13,23 +13,6 @@ from models import Loan
 import datetime
 
 
-def simple_response(response, entity_class):
-    if type(response) is entity_class:
-        @marshal_with(entity_class.simple_fields())
-        def good_response(response):return response
-        return good_response(response)
-    else:
-        return response[0], response[1]
-
-def complete_response(response, entity_class):
-    if type(response) is entity_class:
-        @marshal_with(entity_class.complete_fields())
-        def good_response(response):return response
-        return good_response(response)
-    else:
-        return response[0], response[1]
-
-
 class PingResource(Resource):
     def get(self):
         return "pong"
@@ -38,7 +21,10 @@ class AuthorResource(Resource):
 
     def get(self):
         response = Author.query.all()
-        return complete_response(response, Author)
+        if len(response) > 0:
+            if type(response[0]) is Author: 
+                return marshal(response, Author.complete_fields())
+        return response
 
     def post(self):
         json_data = request.get_json(force=True)
@@ -46,13 +32,17 @@ class AuthorResource(Resource):
             json_data['firstName'], 
             json_data['lastName'], 
             json_data['nationality'])
-        return simple_response(response, Author)
+        if type(response) is Author: 
+            return marshal(response, Author.complete_fields())
+        return response
 
 class AuthorResourceWithId(Resource):
 
     def get(self, author_id):
         response = Author.get(author_id)
-        return complete_response(response, Author)
+        if type(response) is Author: 
+            return marshal(response, Author.complete_fields())
+        return response
 
     def put(self, author_id):
         json_data = request.get_json(force=True)
@@ -60,17 +50,25 @@ class AuthorResourceWithId(Resource):
             json_data['firstName'], 
             json_data['lastName'], 
             json_data['nationality'])
-        return simple_response(response, Author)
+        if type(response) is Author: 
+            return marshal(response, Author.simple_fields())
+        return response
 
     def delete(self, author_id):
         response = Author.delete(author_id)
-        return simple_response(response, Author)
+        if type(response) is Author: 
+            return marshal(response, Author.simple_fields())
+        return response
+
 
 class BookResource(Resource):
-
+    
     def get(self):
         response = Book.get_all()
-        return complete_response(response, Book)
+        if len(response) > 0:
+            if type(response[0]) is Book: 
+                return marshal(response, Book.complete_fields())
+        return response
 
     def post(self):
         json_data = request.get_json(force=True)
@@ -84,14 +82,18 @@ class BookResource(Resource):
             json_data['gender'],
             json_data['reputationValue'],
             json_data['loanType'])
-        return complete_response(response, Book)
+        if type(response) is Book: 
+            return marshal(response, Book.complete_fields())
+        return response
 
 
 class BookResourceWithId(Resource):
 
     def get(self, book_id):
         response = Book.get(book_id)
-        return complete_response(response, Book)
+        if type(response) is Book: 
+            return marshal(response, Book.complete_fields())
+        return response
 
     def put(self, book_id):
         json_data = request.get_json(force=True)
@@ -105,18 +107,25 @@ class BookResourceWithId(Resource):
             json_data['gender'],
             json_data['reputationValue'],
             json_data['loanType'])
-        return simple_response(response, Book)
+        if type(response) is Book: 
+            return marshal(response, Book.simple_fields())
+        return response
+
 
     def delete(self, book_id):
         response = Book.delete(book_id)
-        return simple_response(response, Book)
-
+        if type(response) is Book: 
+            return marshal(response, Book.simple_fields())
+        return response
 
 class SampleResource(Resource):
 
     def get(self):
         response = Sample.get_all()
-        return complete_response(response, Sample)
+        if len(response) > 0:
+            if type(response[0]) is Sample: 
+                return marshal(response, Sample.complete_fields())
+        return response
 
     def post(self):
         json_data = request.get_json(force=True)
@@ -125,14 +134,18 @@ class SampleResource(Resource):
             json_data['acquisitionDate'], 
             json_data.get('discardDate',None), 
             json_data['barCode'])
-        return simple_response(response, Sample)
+        if type(response) is Sample: 
+            return marshal(response, Sample.simple_fields())
+        return response
         
 
 class SampleResourceWithId(Resource):
 
     def get(self, sample_id):
         response = Sample.get(sample_id)
-        return simple_response(response, Sample)
+        if type(response) is Sample: 
+            return marshal(response, Sample.simple_fields())
+        return response
 
     def put(self, sample_id):
         json_data = request.get_json(force=True)
@@ -140,20 +153,25 @@ class SampleResourceWithId(Resource):
                 json_data['acquisitionDate'], 
                 json_data.get('discardDate',None),
                 json_data['barCode'])
-        return simple_response(response, Sample)
+        if type(response) is Sample: 
+            return marshal(response, Sample.simple_fields())
+        return response
 
     def delete(self, sample_id):
         response = Sample.delete(sample_id)
-        return simple_response(response, Sample)
-
+        if type(response) is Sample: 
+            return marshal(response, Sample.simple_fields())
+        return response
 
 class MemberResource(Resource):
-
+    
     def get(self):
         response = Member.get_all()
-        return simple_response(response, Member)
+        if len(response) > 0:
+            if type(response[0]) is Member: 
+                return marshal(response, Member.simple_fields())
+        return response
 
-    @marshal_with(Member.simple_fields())
     def post(self):
         json_data = request.get_json(force=True)
         response = Member.create(            
@@ -167,14 +185,21 @@ class MemberResource(Resource):
             json_data['zipCode'],
             json_data['city'],
             json_data['state'],
-            json_data['enabled'])
-        return simple_response(response, Member)
+            json_data['enabled'])        
+        if type(response) is Member: 
+            return marshal(response, Member.simple_fields())
+        return response
+
 
 class MemberResourceWithId(Resource):
 
     def get(self, member_id):
         response = Member.get(member_id)
-        return simple_response(response, Member)
+        if type(response) is Member: 
+            return marshal(response, Member.simple_fields())
+        return response
+
+
 
     def put(self, member_id):
         json_data = request.get_json(force=True)
@@ -190,19 +215,26 @@ class MemberResourceWithId(Resource):
             json_data['city'],
             json_data['state'],
             json_data['enabled'])
-        return simple_response(response, Member)
+        if type(response) is Member: 
+            return marshal(response, Member.simple_fields())
+        return response
+
 
     def delete(self, member_id):
         response = Member.delete(member_id)
-        return simple_response(response, Member)
-
+        if type(response) is Member: 
+            return marshal(response, Member.simple_fields())
+        return response
 
 
 class LoanResource(Resource):
 
     def get(self):
         response = Loan.query.all()
-        return simple_response(response, Loan)
+        if len(response) > 0:
+            if type(response[0]) is Loan: 
+                return marshal(response, Loan.simple_fields())
+        return response
 
     def post(self):
         json_data = request.get_json(force=True)
@@ -212,32 +244,40 @@ class LoanResource(Resource):
             json_data['withdrawDate'],
             json_data['comment'],
             json_data['loanType'])
-        return simple_response(response, Loan)
+        if type(response) is Loan: 
+            return marshal(response, Loan.simple_fields())
+        return response
 
 class LoanResourceWithId(Resource):
 
     def get(self, loan_id):
         response = Loan.get(loan_id)
-        return simple_response(response, Loan)
+        if type(response) is Loan: 
+            return marshal(response, Loan.simple_fields())
+        return response
 
     def put(self, loan_id):
         json_data = request.get_json(force=True)
         response = Loan.update(loan_id,
             json_data.get(['returnDate'], str(datetime.datetime.now().date())),
             json_data['comment'])
-        return simple_response(response, Loan)
+        if type(response) is Loan: 
+            return marshal(response, Loan.simple_fields())
+        return response
 
     def delete(self, loan_id):
         response = Loan.delete(loan_id)
-        return simple_response(response, Loan)
-
+        if type(response) is Loan: 
+            return marshal(response, Loan.simple_fields())
+        return response
 
 class LoansBySampleResource(Resource):
 
     def get(self, sample_id):
         response = Loan.get_by_sample(sample_id)
-        return simple_response(response, Loan)
-
+        if type(response) is Loan: 
+            return marshal(response, Loan.simple_fields())
+        return response
 
 class BookAuthorAsossiationResource(Resource):
 
