@@ -59,10 +59,16 @@ class Loan(db.Model):
         if is_allowd_and_reason[0]:
             withdraw_date = string_to_date(withdraw_date)
             agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
-            has_one = Loan.query.filter_by(member_id=member_id, sample_id=sample_id).first()
+            has_one = Loan.query.filter_by(member_id=member_id, 
+                                           sample_id=sample_id).first()
             if has_one:
                 return has_one
-            new_one = Loan(member_id=member_id,sample_id=sample_id,agreed_return_date=agreed_return_date,return_date=return_date,withdraw_date=withdraw_date,comment=comment, loan_type=loan_type)
+            new_one = Loan(member_id=member_id,
+                           sample_id=sample_id,
+                           agreed_return_date=agreed_return_date,
+                           withdraw_date=withdraw_date,
+                           comment=comment, 
+                           loan_type=loan_type)
             db.session.add(new_one)
             db.session.commit()
         else:
