@@ -91,7 +91,7 @@ class Sample(db.Model):
     def delete(id):
         sample = Sample.query.get(id)
         if sample:
-            if sample.is_loaned: 
+            if (sample.is_loaned) and (sample.erased == False): 
                 return {'message' : 'El ejemplar no puede ser borado, ha sido prestado.'}, 400
             sample.erased = True
             db.session.commit()
@@ -111,6 +111,7 @@ class Sample(db.Model):
     def is_loaned(self):
         from loan import Loan
         for sample_loan in self.loans:
-            if sample_loan.return_date == None: return True
+            if (sample_loan.return_date == None) : 
+                return True
         return False
         
