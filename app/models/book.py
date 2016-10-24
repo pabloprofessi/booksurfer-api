@@ -158,7 +158,6 @@ class Book(db.Model):
         book = Book.query.get(id)
         if book:
             book.authors = []
-            book.samples = True
             for sample in book.samples:
                 if sample.is_loaned:
                     return { 'message' : 'El libro tiene el ejemplar, con el codigo de barra: ' + sample.bar_code + ' ya prestado' }, 400

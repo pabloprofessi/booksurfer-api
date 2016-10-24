@@ -110,5 +110,7 @@ class Sample(db.Model):
     @property
     def is_loaned(self):
         from loan import Loan
-        return Loan.get_pending_loan_by_sample(self.id) == None
+        for sample_loan in self.loans:
+            if sample_loan.return_date == None: return True
+        return False
         
