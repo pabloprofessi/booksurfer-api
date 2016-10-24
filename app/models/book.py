@@ -65,7 +65,11 @@ class Book(db.Model):
 
     @staticmethod
     def get(id):
-        return Book.query.get(id);
+        a_book = Book.query.get(id);
+        if a_book:
+            for a_sample in a_book.samples:
+                if a_sample.erased: a_book.samples.remove(a_sample)
+        return a_book
 
 
     @staticmethod
