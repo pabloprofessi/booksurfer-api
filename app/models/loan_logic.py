@@ -46,8 +46,9 @@ def loan_is_allowed_for_member(member_id, sample_id):
         update_member_to_loan(a_member, False)
         is_allowed = False
         message = message + "El socio esta suspendido hasta: " + str(get_suspention_end_date(a_member)) + ".\n"
-    update_member_to_loan(a_member, True)
-    return True, message 
+
+    if is_allowed: update_member_to_loan(a_member, True)
+    return is_allowed, message 
 
 def member_is_enabled(a_member):
     return a_member.enabled
