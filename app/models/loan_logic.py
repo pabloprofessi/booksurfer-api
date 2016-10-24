@@ -22,7 +22,7 @@ def loan_is_allowed_for_member(member_id, sample_id):
     message = ""
     if a_sample.is_loaned and is_allowed:
         is_allowed = False
-        message = message + "El ejemplar ha sido prestado.\n"
+        message = message + "El ejemplar ya ha sido prestado.\n"
     if a_book.erased and is_allowed:
         is_allowed = False
         message = message + "Libro ha sido borrados.\n"
@@ -91,7 +91,7 @@ def calc_end_suspention_days(a_member):
     pending_loan_list = Loan.get_pending_loans_by_member(a_member.id)
     pendind_suspension_days = 0
     for a_loan in pending_loan_list:
-        time_difference = datetime.now().date() - a_loan.agreed_return_date 
+        time_difference = a_loan.agreed_return_date - datetime.now().date() 
         if time_difference.days < 0:
             pendind_suspension_days = 2 * (pendind_suspension_days + abs(time_difference.days))
     return pendind_suspension_days

@@ -108,19 +108,19 @@ base_url='http://localhost:5000'
 
 
 
-response = requests.post(base_url + "/loans",
-            data = json.dumps({'agreedReturnDate' : '2016-10-24',
-                               'withdrawDate' : '2016-10-24',
-                               'loanType': 'REMOTE',
-                               'sampleId': "2", 
-                               'memberId': "1"}),
-            headers={'Content-Type': 'application/json'})
-print(response.text)
+#response = requests.post(base_url + "/loans",
+#            data = json.dumps({'agreedReturnDate' : '2016-10-24',
+#                               'withdrawDate' : '2016-10-24',
+#                               'loanType': 'REMOTE',
+#                               'sampleId': "2", 
+#                               'memberId': "1"}),
+#            headers={'Content-Type': 'application/json'})
+#print(response.text)
 response = requests.post(base_url + "/loans",
             data = json.dumps({'agreedReturnDate' :  "2016-10-19",
                                'withdrawDate' : "2016-10-24",
                                "loanType": "REMOTE",
-                               'sampleId': "2", 
+                               'sampleId': "3", 
                                'memberId': "1"}),
             headers={'Content-Type': 'application/json'})
 print(response.text)
