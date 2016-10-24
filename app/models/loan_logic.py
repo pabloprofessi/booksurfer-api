@@ -39,7 +39,7 @@ def loan_is_allowed_for_member(member_id, sample_id):
         update_member_to_loan(a_member, False)
         is_allowd = False
         message = message + "El socio ya tiene mas de 3 libros prestados.\n"
-    if member_is_suspended(member_id):
+    if member_is_suspended(a_member):
         update_member_to_loan(a_member, False)
         is_allowd = False
         message = message + "El socio esta suspendido hasta: " + str(get_suspention_end_date(a_member)) + ".\n"
