@@ -60,9 +60,10 @@ class Loan(db.Model):
             withdraw_date = string_to_date(withdraw_date)
             agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
             has_one = Loan.query.filter_by(member_id=member_id, 
-                                           sample_id=sample_id).first()
+                                           sample_id=sample_id,
+                                           withdraw_date=withdraw_date).first()
             if has_one:
-                return has_one
+                return {'message' : 'El prestamo ya fue creado.'}, 400
             new_one = Loan(member_id=member_id,
                            sample_id=sample_id,
                            agreed_return_date=agreed_return_date,
