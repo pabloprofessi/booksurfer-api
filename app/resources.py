@@ -242,7 +242,6 @@ class LoanResource(Resource):
             json_data['memberId'],
             json_data['sampleId'],
             json_data['withdrawDate'],
-            json_data['comment'],
             json_data['loanType'])
         if type(response) is Loan: 
             return marshal(response, Loan.simple_fields())

@@ -20,29 +20,35 @@ def loan_is_allowed_for_member(member_id, sample_id):
     a_book = Book.get(a_sample.book_id)
     is_allowed = True
     message = ""
-    if a_sample.is_loaned:
+    if a_sample.is_loaned and is_allowed:
         is_allowed = False
         message = message + "El ejemplar ha sido prestado.\n"
-    if (not a_book.erased) and (not a_sample.erased) and (not a_member.erased):
+    if a_book.erased and is_allowed:
         is_allowed = False
-        message = message + "Libro ejemplar o socio han sido borrados.\n"
-    if a_sample.discard_date:
+        message = message + "Libro ha sido borrados.\n"
+    if a_sample.erased and is_allowed:
+        is_allowed = False
+        message = message + "Ejemplar ha sido borrados.\n"
+    if a_member.erased  and is_allowed:
+        is_allowed = False
+        message = message + "Socio ha sido borrados.\n"
+    if a_sample.discard_date and is_allowed:
         is_allowed = False 
         message = message + "El ejemplar ha sido descartado.\n"
-    if not member_is_enabled(a_member):
+    if not member_is_enabled(a_member) and is_allowed:
         is_allowed = False
         message = message + "El socio no esta habilitado para recibir prestamos.\n"
-    if not book_is_loanable(a_book):
+    if (not book_is_loanable(a_book)) and is_allowed:
         is_allowed = False
         message = message + "El libro no esta habilitado para prestamos remotos.\n"
-    if not allowed_by_book_puntuation(a_member, a_book):
+    if not allowed_by_book_puntuation(a_member, a_book) and is_allowed:
         is_allowed = False
         message = message + "La reputacion del libro es demasiado alta para ser prestado a ese socio.\n"
-    if debt_more_than_three_books(member_id):
+    if debt_more_than_three_books(member_id) and is_allowed:
         update_member_to_loan(a_member, False)
         is_allowed = False
         message = message + "El socio ya tiene mas de 3 libros prestados.\n"
-    if member_is_suspended(a_member):
+    if member_is_suspended(a_member) and is_allowed:
         update_member_to_loan(a_member, False)
         is_allowed = False
         message = message + "El socio esta suspendido hasta: " + str(get_suspention_end_date(a_member)) + ".\n"
@@ -68,7 +74,7 @@ def debt_more_than_three_books(member_id):
 
 def member_is_suspended(a_member):
     suspention_days = calc_end_suspention_days(a_member)   
-    return suspention_days == 0
+    return suspention_days > 0
 
 def update_member_to_loan(a_member, state):
     a_member.authorized_to_loan = state

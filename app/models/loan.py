@@ -54,7 +54,7 @@ class Loan(db.Model):
         return Loan.query.filter_by(sample_id=sample_id, return_date=None).first()
 
     @staticmethod
-    def create(member_id, sample_id, withdraw_date, comment, loan_type):
+    def create(member_id, sample_id, withdraw_date, loan_type):
         is_allowd_and_reason = loan_logic.loan_is_allowed_for_member(member_id, sample_id)
         if is_allowd_and_reason[0]:
             withdraw_date = string_to_date(withdraw_date)
@@ -68,7 +68,6 @@ class Loan(db.Model):
                            sample_id=sample_id,
                            agreed_return_date=agreed_return_date,
                            withdraw_date=withdraw_date,
-                           comment=comment, 
                            loan_type=loan_type)
             db.session.add(new_one)
             db.session.commit()

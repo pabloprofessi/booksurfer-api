@@ -100,9 +100,8 @@ class Sample(db.Model):
     @property
     def available_for_loan(self):
         from loan import Loan
-        a_loan = Loan.get_pending_loan_by_sample(self.id)
-        if a_loan:
-            return False
+        if self:
+            return not self.is_loaned
         if self.discard_date:
             return False
         return True
