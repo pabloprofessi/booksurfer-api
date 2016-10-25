@@ -34,6 +34,21 @@ class Loan(db.Model):
         }
 
     @staticmethod
+    def complete_fields():
+        from sample import Sample
+        return {
+        'id' : fields.String,
+        'memberId' : fields.String(attribute='member_id'),
+        'sample' : fields.Nested(Sample.complete_fields()),
+        'agreedReturnDate' : fields.String(attribute='agreed_return_date'),
+        'returnDate' : fields.String(attribute='return_date'),
+        'withdrawDate' : fields.String(attribute='withdraw_date'),
+        'comment' : fields.String,
+        'loanType': fields.String(attribute='loan_type'),
+        }
+
+
+    @staticmethod
     def get(id):
         return Loan.query.get(id)
 
@@ -43,7 +58,7 @@ class Loan(db.Model):
     
     @staticmethod
     def get_loans_by_member(member_id):
-        return Loan.query.filter_by(member_id=member_id).all()
+        return Loan.query.filter_by(member_id=member_id).order_by('withdraw_date desc').all()
 
     @staticmethod
     def get_by_sample(sample_id):
@@ -61,7 +76,8 @@ class Loan(db.Model):
             agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
             has_one = Loan.query.filter_by(member_id=member_id, 
                                            sample_id=sample_id,
-                                           withdraw_date=withdraw_date).first()
+                                           withdraw_date=withdraw_date
+                                           return_date=None).first()
             if has_one:
                 return {'message' : 'El prestamo ya fue creado.'}, 400
             new_one = Loan(member_id=member_id,
@@ -79,10 +95,7 @@ class Loan(db.Model):
     def update(id, return_date, comment):
         loan = Loan.get(id)
         if loan:
-            agreed_return_date = string_to_date(agreed_return_date)
-            return_date = string_to_date(return_date)
-            loan.agreed_return_date = agreed_return_date
-            loan.return_date = return_date
+            loan.return_date = string_to_date(return_date)
             loan.comment = comment   
             if loan.loan_type == 'REMOTE':
                 loan_logic.get_updated_member_reputation(loan.member_id)         

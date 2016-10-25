@@ -144,7 +144,7 @@ class SampleResourceWithId(Resource):
     def get(self, sample_id):
         response = Sample.get(sample_id)
         if type(response) is Sample: 
-            return marshal(response, Sample.simple_fields())
+            return marshal(response, Sample.complete_fields())
         return response
 
     def put(self, sample_id):
@@ -258,7 +258,7 @@ class LoanResourceWithId(Resource):
     def put(self, loan_id):
         json_data = request.get_json(force=True)
         response = Loan.update(loan_id,
-            json_data.get(['returnDate'], str(datetime.datetime.now().date())),
+            json_data.get('returnDate', str(datetime.datetime.now().date())),
             json_data['comment'])
         if type(response) is Loan: 
             return marshal(response, Loan.simple_fields())
@@ -274,8 +274,9 @@ class LoansBySampleResource(Resource):
 
     def get(self, sample_id):
         response = Loan.get_by_sample(sample_id)
-        if type(response) is Loan: 
-            return marshal(response, Loan.simple_fields())
+        if len(response) > 0:
+            if type(response[0]) is Loan: 
+                return marshal(response, Loan.simple_fields())
         return response
 
 class BookAuthorAsossiationResource(Resource):
@@ -289,10 +290,11 @@ class BookAuthorAsossiationResource(Resource):
         return response
 
 class LoansByMemberResource(Resource):
-
+    
+    @marshal_with(Loan.complete_fields())
     def get(self, member_id):
         response = Loan.get_loans_by_member(member_id)
-        return simple_response(response, Loan)
+        return response
 
 
 

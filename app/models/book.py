@@ -3,6 +3,7 @@ from flask_restful import fields
 
 from author import Author
 from sample import Sample
+from pprint import pprint
 
 books_author = db.Table('books_author',
     db.Column('book_id', db.Integer, db.ForeignKey('book.id'), nullable=False),
@@ -65,11 +66,20 @@ class Book(db.Model):
 
     @staticmethod
     def get(id):
-        a_book = Book.query.get(id);
+        a_book = Book.query.get(id)
         if a_book:
-            for a_sample in a_book.samples:
-                if a_sample.erased: a_book.samples.remove(a_sample)
-        return a_book
+            return a_book.get_without_sample_erased
+
+    @property
+    def get_without_sample_erased(self):
+        not_erased_samples_list = self.samples
+        for a_sample in self.samples:
+            if not a_sample.erased:
+                not_erased_samples_list.append(a_sample)
+        self.samples = not_erased_samples_list
+        return self
+
+
 
 
     @staticmethod
@@ -166,6 +176,7 @@ class Book(db.Model):
                 if sample.is_loaned:
                     return { 'message' : 'El libro tiene el ejemplar, con el codigo de barra: ' + sample.bar_code + ' ya prestado' }, 400
                 Sample.delete(sample.id)
-            db.session.delete(book)
+            book.erased = True
+            #db.session.delete(book)
             db.session.commit()
         return book

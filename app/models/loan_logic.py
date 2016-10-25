@@ -38,7 +38,7 @@ def loan_is_allowed_for_member(member_id, sample_id):
     if not member_is_enabled(a_member) and is_allowed:
         is_allowed = False
         message = message + "El socio no esta habilitado para recibir prestamos.\n"
-    if (not book_is_loanable(a_book)) and is_allowed:
+    if book_is_loanable(a_book) and is_allowed:
         is_allowed = False
         message = message + "El libro no esta habilitado para prestamos remotos.\n"
     if not allowed_by_book_puntuation(a_member, a_book) and is_allowed:

@@ -48,6 +48,12 @@ class Sample(db.Model):
     def get_all():
         return Sample.query.filter_by(erased=False).all()
 
+    @staticmethod
+    def get_active_by_book(book_id):
+        return Sample.query.filter_by(book_id=book_id, erased=False).all()
+
+        
+
 
     
     @staticmethod
@@ -100,9 +106,7 @@ class Sample(db.Model):
     @property
     def available_for_loan(self):
         from loan import Loan
-        if self:
-            return not self.is_loaned
-        if self.discard_date:
+        if self.discard_date or self.is_loaned:
             return False
         return True
 
