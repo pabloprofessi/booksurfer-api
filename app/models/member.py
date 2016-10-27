@@ -47,8 +47,6 @@ class Member(db.Model):
             'enabled' : fields.String,
             'reputation' : fields.Float,
             'authorizedToLoan' : fields.String(attribute='authorized_to_loan'),
-
-
         }
 
     @staticmethod
@@ -69,6 +67,16 @@ class Member(db.Model):
             'reputation' : fields.Float,
             'authorizedToLoan' : fields.String(attribute='authorized_to_loan'),
             'loans': fields.List(fields.Nested(Loans.simple_fields()), attribute='loans'),
+        }
+
+    @staticmethod
+    def minimal_fields():
+        return {
+            'id' : fields.String,
+            'firstName' : fields.String(attribute='first_name'),
+            'lastName' : fields.String(attribute='last_name'),
+            'enabled' : fields.String,
+            'authorizedToLoan' : fields.String(attribute='authorized_to_loan'),
         }
 
 

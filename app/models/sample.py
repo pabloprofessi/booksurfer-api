@@ -111,6 +111,10 @@ class Sample(db.Model):
         return True
 
     @property
+    def loans_count(self):
+        return len(self.loans)
+
+    @property
     def is_loaned(self):
         from loan import Loan
         for sample_loan in self.loans:

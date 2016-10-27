@@ -61,6 +61,7 @@ class Book(db.Model):
                 'loanType': fields.String(attribute='loan_type'),
                 'authors': fields.List(fields.Nested(Author.simple_fields()), attribute='authors'),
                 'samples': fields.List(fields.Nested(Sample.simple_fields()), attribute='samples'),
+                'popularity': fields.Integer(attribute='popularity'),
                 }
 
 
@@ -79,12 +80,15 @@ class Book(db.Model):
         self.samples = not_erased_samples_list
         return self
 
-
-
-
     @staticmethod
     def get_all():
         return Book.query.filter_by(erased=False).all()
+
+    @staticmethod
+    def get_all_order_by_popularity():
+        book_list = Book.query.filter_by(erased=False).all()
+        return book_list.sort(key=lambda x: x.popularity, reverse=True)
+        
 
     @staticmethod
     def create_author_assoc(book_id, author_id):
@@ -180,3 +184,10 @@ class Book(db.Model):
             #db.session.delete(book)
             db.session.commit()
         return book
+
+    @property
+    def popularity(self):
+        book_loans_count = 0
+        for sample in self.samples:
+            book_loans_count = sample.loans_count + book_loans_count 
+        return book_loans_count

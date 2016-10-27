@@ -296,6 +296,26 @@ class LoansByMemberResource(Resource):
         response = Loan.get_loans_by_member(member_id)
         return response
 
+class LatestLoans(Resource):
+
+    @marshal_with(Loan.for_report_fields())
+    def get(self):
+        response = Loan.get_latest_loans()
+        return response
+
+class OutdatedLoans(Resource):
+
+    @marshal_with(Loan.for_report_fields())
+    def get(self):
+        response = Loan.get_pending_loans()
+        return response
+
+class PopularBooks(Resource):
+
+    @marshal_with(Book.complete_fields())
+    def get(self):
+        response = Book.get_all_order_by_popularity()    
+        return response
 
 
 extensions.api.add_resource(PingResource, '/ping')
@@ -316,4 +336,7 @@ extensions.api.add_resource(LoansBySampleResource, '/samples/<string:sample_id>/
 
 extensions.api.add_resource(LoansByMemberResource, '/members/<string:member_id>/loans')
 
+extensions.api.add_resource(LatestLoans, '/reports/latest-loans')
+extensions.api.add_resource(OutdatedLoans, '/reports/outdated-loans')
+extensions.api.add_resource(PopularBooks, '/reports/popular-books')
 

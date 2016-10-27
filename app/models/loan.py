@@ -47,10 +47,35 @@ class Loan(db.Model):
         'loanType': fields.String(attribute='loan_type'),
         }
 
+    @staticmethod
+    def for_report_fields():
+        from sample import Sample
+        from member import Member
+        return {
+        'id' : fields.String,
+        'member' : fields.Nested(Member.minimal_fields()),
+        'sample' : fields.Nested(Sample.complete_fields()),
+        'agreedReturnDate' : fields.String(attribute='agreed_return_date'),
+        'returnDate' : fields.String(attribute='return_date'),
+        'withdrawDate' : fields.String(attribute='withdraw_date'),
+        'comment' : fields.String,
+        'loanType': fields.String(attribute='loan_type'),
+        }
 
     @staticmethod
     def get(id):
         return Loan.query.get(id)
+
+
+    @staticmethod
+    def get_latest_loans():
+        oldest_date = datetime.datetime.now().date() - datetime.timedelta(days=365)
+        return Loan.query.filter(Loan.withdraw_date >= oldest_date).all()
+
+    @staticmethod
+    def get_pending_loans(member_id):
+        now_date = datetime.datetime.now().date()
+        return Loan.query.filter(Loan.return_date == None, Loan.agreed_return_date > now_date).all()
 
     @staticmethod
     def get_pending_loans_by_member(member_id):
@@ -73,7 +98,8 @@ class Loan(db.Model):
         is_allowd_and_reason = loan_logic.loan_is_allowed_for_member(member_id, sample_id)
         if is_allowd_and_reason[0]:
             withdraw_date = string_to_date(withdraw_date)
-            agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date)
+
+            agreed_return_date =  loan_logic.get_agreed_return_date(withdraw_date,loan_type)
             has_one = Loan.query.filter_by(member_id=member_id, 
                                            sample_id=sample_id,
                                            withdraw_date=withdraw_date,
@@ -98,8 +124,7 @@ class Loan(db.Model):
         if loan:
             loan.return_date = string_to_date(return_date)
             loan.comment = comment   
-            if loan.loan_type == 'REMOTE':
-                loan_logic.get_updated_member_reputation(Member.get(loan.member_id))         
+            loan_logic.get_updated_member_reputation(Member.get(loan.member_id))         
             db.session.commit()
         return loan
 

@@ -103,20 +103,21 @@ def member_is_allowed(member_id):
     a_member = Member.get(member_id)
     return a_member.enabled
 
-def get_agreed_return_date(withdraw_date):
-    return withdraw_date + timedelta(days=DAYS_TO_RETURN_BOOK)
+def get_agreed_return_date(withdraw_date, loan_type):
+    if loan_type == 'REMOTE':
+        return withdraw_date + timedelta(days=DAYS_TO_RETURN_BOOK)
+    else:
+        return withdraw_date + timedelta(days=1)
 
-# cada vez q se devuelve un libro!
+
 def get_updated_member_reputation(a_member):
     from loan import Loan
     member_loan_list = Loan.get_loans_by_member(a_member.id)
     for member_loan in member_loan_list:
         datediff = member_loan.agreed_return_date - datetime.now().date()
         if datediff.days < 0:
-            #si lo entrego fuera de fecha resta
             a_member.reputation = a_member.reputation + (BAD_TERM_REPUTATION_CONSTANT * datediff.days)
         else:
-            #si lo entrego en fecha suma
             a_member.reputation = a_member.reputation + (GOOD_TERM_REPUTATION_CONSTANT)
         if a_member.reputation > 10 : a_member.reputation = 10
         if a_member.reputation <= 0 : a_member.reputation = 0
