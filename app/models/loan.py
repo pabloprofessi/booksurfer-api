@@ -93,12 +93,13 @@ class Loan(db.Model):
 
     @staticmethod
     def update(id, return_date, comment):
+        from member import Member
         loan = Loan.get(id)
         if loan:
             loan.return_date = string_to_date(return_date)
             loan.comment = comment   
             if loan.loan_type == 'REMOTE':
-                loan_logic.get_updated_member_reputation(loan.member_id)         
+                loan_logic.get_updated_member_reputation(Member.get(loan.member_id))         
             db.session.commit()
         return loan
 
