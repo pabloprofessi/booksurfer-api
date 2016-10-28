@@ -73,7 +73,7 @@ class Loan(db.Model):
         return Loan.query.filter(Loan.withdraw_date >= oldest_date).all()
 
     @staticmethod
-    def get_pending_loans(member_id):
+    def get_pending_loans():
         now_date = datetime.datetime.now().date()
         return Loan.query.filter(Loan.return_date == None, Loan.agreed_return_date > now_date).all()
 

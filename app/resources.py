@@ -9,13 +9,109 @@ from models import Book
 from models import Sample
 from models import Member
 from models import Loan
+from models import User
+from models import Publisher
 
 import datetime
+
 
 
 class PingResource(Resource):
     def get(self):
         return "pong"
+
+
+class PublishersResource(Resource):
+
+    def get(self):
+        response = Publisher.query.all()
+        if len(response) > 0:
+            if type(response[0]) is Publisher: 
+                return marshal(response, Publisher.simple_fields())
+        return response
+
+    def post(self):
+        json_data = request.get_json(force=True)
+        response = Publisher.create(
+            json_data['name'])
+        if type(response) is Publisher: 
+            return marshal(response, Publisher.simple_fields())
+        return response
+
+class PublishersResourceWithId(Resource):
+
+    def get(self, publisher_id):
+        response = Publisher.get(publisher_id)
+        if type(response) is Publisher: 
+            return marshal(response, Publisher.simple_fields())
+        return response
+
+    def put(self, publisher_id):
+        json_data = request.get_json(force=True)
+        response = Publisher.update(publisher_id,
+            json_data['name'])
+        if type(response) is Publisher: 
+            return marshal(response, Publisher.simple_fields())
+        return response
+
+    def delete(self, publisher_id):
+        response = Publisher.delete(publisher_id)
+        if type(response) is Publisher: 
+            return marshal(response, Publisher.simple_fields())
+        return response
+
+
+
+
+
+class UsersResource(Resource):
+
+    def get(self):
+        response = User.query.all()
+        if len(response) > 0:
+            if type(response[0]) is User: 
+                return marshal(response, User.simple_fields())
+        return response
+
+    def post(self):
+        json_data = request.get_json(force=True)
+        response = User.create(
+            json_data['username'],
+            json_data['firstName'], 
+            json_data['lastName'], 
+            json_data['password'],
+            json_data['role'],
+            json_data['dni'])
+        if type(response) is User: 
+            return marshal(response, User.simple_fields())
+        return response
+
+class UsersResourceWithId(Resource):
+
+    def get(self, user_id):
+        response = User.get(user_id)
+        if type(response) is User: 
+            return marshal(response, User.simple_fields())
+        return response
+
+    def put(self, user_id):
+        json_data = request.get_json(force=True)
+        response = User.update(user_id,
+            json_data['username'],
+            json_data['firstName'], 
+            json_data['lastName'], 
+            json_data['password'],
+            json_data['role'],
+            json_data['dni'])
+        if type(response) is User: 
+            return marshal(response, User.simple_fields())
+        return response
+
+    def delete(self, user_id):
+        response = User.delete(user_id)
+        if type(response) is User: 
+            return marshal(response, User.simple_fields())
+        return response
 
 class AuthorResource(Resource):
 
@@ -298,29 +394,40 @@ class LoansByMemberResource(Resource):
 
 class LatestLoans(Resource):
 
-    @marshal_with(Loan.for_report_fields())
     def get(self):
         response = Loan.get_latest_loans()
+        if len(response) > 0:
+            if type(response[0]) is Loan: 
+                return marshal(response, Loan.for_report_fields())
         return response
 
 class OutdatedLoans(Resource):
 
-    @marshal_with(Loan.for_report_fields())
     def get(self):
         response = Loan.get_pending_loans()
+        if len(response) > 0:
+            if type(response[0]) is Loan: 
+                return marshal(response, Loan.for_report_fields())
         return response
+
 
 class PopularBooks(Resource):
 
-    @marshal_with(Book.complete_fields())
     def get(self):
         response = Book.get_all_order_by_popularity()    
+        if len(response) > 0:
+            if type(response[0]) is Book: 
+                return marshal(response, Book.complete_fields())
         return response
 
 
 extensions.api.add_resource(PingResource, '/ping')
 extensions.api.add_resource(AuthorResource, '/authors')
-extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:author_id>')
+extensions.api.add_resource(PublishersResource, '/publishers')
+extensions.api.add_resource(PublishersResourceWithId, '/publishers/<string:publisher_id>')
+extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:user_id>')
+extensions.api.add_resource(UsersResource, '/users')
+extensions.api.add_resource(UsersResourceWithId, '/users/<string:user_id>')
 extensions.api.add_resource(BookResource, '/books')
 extensions.api.add_resource(BookResourceWithId, '/books/<string:book_id>')
 
