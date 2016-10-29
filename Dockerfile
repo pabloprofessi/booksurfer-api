@@ -22,6 +22,7 @@ COPY . /app
 RUN pip install .
 
 ENV APP_ENV=dev
+ENV FLASK_DEBUG=1
 
 RUN sleep 5
 

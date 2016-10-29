@@ -9,7 +9,7 @@ def string_to_date(a_date):
 
 class Sample(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    loans = db.relationship('Loan', backref='sample', lazy='dynamic', uselist=True)
+    loans = db.relationship('Loan', backref='sample', lazy='select', uselist=True)
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'),nullable=False)
     acquisition_date =db.Column(db.Date)
     discard_date = db.Column(db.Date)
@@ -112,12 +112,17 @@ class Sample(db.Model):
 
     @property
     def loans_count(self):
-        return len(self.loans)
+        loans_list = self.loans
+        db.session.commit()
+        return len(loans_list)
+
 
     @property
     def is_loaned(self):
         from loan import Loan
-        for sample_loan in self.loans:
+        loan_list = self.loans
+        db.session.commit()
+        for sample_loan in loan_list:
             if (sample_loan.return_date == None) : 
                 return True
         return False

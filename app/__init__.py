@@ -9,6 +9,7 @@ from . import extensions, resources
 
 def create_app(environment='dev'):
     app = Flask('booksurfer-api')
+    app.config['DEBUG'] = True
     CORS(app)
 
     app.config.from_pyfile('config/{}.py'.format(environment))

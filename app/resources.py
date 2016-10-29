@@ -12,6 +12,7 @@ from models import Loan
 from models import User
 from models import Publisher
 
+from pprint import pprint
 import datetime
 
 
@@ -417,15 +418,16 @@ class PopularBooks(Resource):
         response = Book.get_all_order_by_popularity()    
         if len(response) > 0:
             if type(response[0]) is Book: 
-                return marshal(response, Book.complete_fields())
+                book_list = marshal(response, Book.complete_fields())
+                return book_list
         return response
 
 
 extensions.api.add_resource(PingResource, '/ping')
-extensions.api.add_resource(AuthorResource, '/authors')
 extensions.api.add_resource(PublishersResource, '/publishers')
 extensions.api.add_resource(PublishersResourceWithId, '/publishers/<string:publisher_id>')
-extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:user_id>')
+extensions.api.add_resource(AuthorResource, '/authors')
+extensions.api.add_resource(AuthorResourceWithId, '/authors/<string:author_id>')
 extensions.api.add_resource(UsersResource, '/users')
 extensions.api.add_resource(UsersResourceWithId, '/users/<string:user_id>')
 extensions.api.add_resource(BookResource, '/books')

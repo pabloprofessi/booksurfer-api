@@ -86,11 +86,10 @@ class Book(db.Model):
 
     @staticmethod
     def get_all_order_by_popularity():
+        import operator
         book_list = Book.query.filter_by(erased=False).all()
-        if book_list:
-            return book_list.sort(key=lambda x: x.popularity, reverse=True)
-        else:
-            return []
+        sorted_book_list = sorted(book_list, key=operator.attrgetter('popularity'), reverse=True)
+        return sorted_book_list
         
 
     @staticmethod
