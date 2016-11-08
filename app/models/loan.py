@@ -75,7 +75,7 @@ class Loan(db.Model):
     @staticmethod
     def get_pending_loans():
         now_date = datetime.datetime.now().date()
-        return Loan.query.filter(Loan.return_date == 'NULL', Loan.agreed_return_date > now_date).all()
+        return Loan.query.filter(Loan.return_date == None, Loan.agreed_return_date < now_date).all()
 
     @staticmethod
     def get_pending_loans_by_member(member_id):
@@ -95,7 +95,7 @@ class Loan(db.Model):
 
     @staticmethod
     def create(member_id, sample_id, withdraw_date, loan_type):
-        is_allowd_and_reason = loan_logic.loan_is_allowed_for_member(member_id, sample_id)
+        is_allowd_and_reason = loan_logic.loan_is_allowed_for_member(member_id, sample_id, loan_type)
         if is_allowd_and_reason[0]:
             withdraw_date = string_to_date(withdraw_date)
 

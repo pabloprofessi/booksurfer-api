@@ -12,7 +12,7 @@ BAD_TERM_REPUTATION_CONSTANT = 0.3
 DAYS_TO_RETURN_BOOK = 12
 
 
-def loan_is_allowed_for_member(member_id, sample_id):
+def loan_is_allowed_for_member(member_id, sample_id, loan_type):
     from member import Member
     a_member = Member.get(member_id)
     get_updated_member_reputation(a_member)
@@ -38,7 +38,7 @@ def loan_is_allowed_for_member(member_id, sample_id):
     if not member_is_enabled(a_member) and is_allowed:
         is_allowed = False
         message = message + "El socio no esta habilitado para recibir prestamos.\n"
-    if not book_is_loanable(a_book) and is_allowed:
+    if not book_is_loanable(a_book, loan_type) and is_allowed:
         is_allowed = False
         message = message + "El libro no esta habilitado para prestamos remotos.\n"
     if not allowed_by_book_puntuation(a_member, a_book) and is_allowed:
@@ -60,8 +60,16 @@ def member_is_enabled(a_member):
     return a_member.enabled
 
 
-def book_is_loanable(a_book):
-    return a_book.loan_type == 'REMOTE'
+def book_is_loanable(a_book, loan_type):
+    if a_book.loan_type == 'REMOTE':
+        return True
+    elif a_book.loan_type == 'LOCAL' and loan_type == 'LOCAL':
+        return True
+    else:
+        return False
+
+
+    
 
 def allowed_by_book_puntuation(a_member, a_book):
     return a_member.reputation >= a_book.reputation_value

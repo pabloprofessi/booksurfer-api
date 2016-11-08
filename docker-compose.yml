@@ -17,3 +17,6 @@ db:
     MYSQL_DATABASE: booksurfer
     MYSQL_USER: booksurfer
     MYSQL_PASSWORD: booksurfer
+  volumes:
+    - ./:/app/
+

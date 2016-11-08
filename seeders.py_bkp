@@ -6,102 +6,54 @@ import json
 base_url='http://localhost:5000'
 
 
-book_list = [
-{"title" : "alfajor",
-"publisher" : "planeta",
-"editionYear" : 2010,
-"editionCountry" : "argentina",
-"price" : 100,
-"isbn" : "2128629716",
-"gender" : "fisica",
-"reputationValue" : 6,
-"loanType" : "REMOTE"},
-{"title" : "harry potter",
-"publisher" : "planeta",
-"editionYear" : 2010,
-"editionCountry" : "argentina",
-"price" : 200,
-"isbn" : "3029855590",
-"gender" : "fisica",
-"reputationValue" :  8,
-"loanType" : "LOCAL"},
-{"title" : "pacman trumpeter",
-"publisher" : "emece",
-"editionYear" : 2010,
-"editionCountry" : "argentina",
-"price" : 10.50,
-"isbn" : "2332932199",
-"gender" : "terror",
-"reputationValue" : 4,
-"loanType" : "REMOTE"},
-{"title" : "gringos amigos",
-"publisher" : "golondrina",
-"editionYear" : 2010,
-"editionCountry" : "argentina",
-"price" : 10.50,
-"isbn" : "1621017673",
-"gender" : "terror",
-"reputationValue" : 6,
-"loanType" : "LOCAL"},
-{"title" : "gefatura de bebe gloglo",
-"publisher" : "salamndra",
-"editionYear" : 2010,
-"editionCountry" : "argentina",
-"price" : 10.50,
-"isbn" : "2649520825",
-"gender" : "legislatura",
-"reputationValue" : 3,
-"loanType" : "REMOTE"},
-]
-
-book_id_list = []
-for book in book_list:
-        response = requests.post(base_url + "/books", 
-                   data = json.dumps(book),                        
-                   headers={'Content-Type': 'application/json'})
-        book_id_list.append(response.json()['id'])
-	
-
-
-author_list = [
-{"firstName" : "pablo", 
-"lastName" : "professi",
-"nationality" : "argentino"},
-{"firstName" : "javier", 
-"lastName" : "anselmi",
-"nationality" : "argentino"},
-{"firstName" : "kuasimodo", 
-"lastName" : "borbonete",
-"nationality" : "frances"},
-{"firstName" : "quintaro", 
-"lastName" : "grindustre",
-"nationality" : "holanda"},
-{"firstName" : "gonzo", 
-"lastName" : "bonneli",
-"nationality" : "hungria"},
-{"firstName" : "ratimi", 
-"lastName" : "tripipio",
-"nationality" : "kasajstan"},
-]
-
-author_id_list = []
-for author in author_list:
-        response = requests.post(base_url + "/authors", 
-                   data = json.dumps(author),                        
-                   headers={'Content-Type': 'application/json'})
-        author_id_list.append(response.json()['id'])
-
-requests.post(base_url + "/books/" + book_id_list[0] + "/authors/" + author_id_list[0], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-requests.post(base_url + "/books/" + book_id_list[0] + "/authors/" + author_id_list[1], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-requests.post(base_url + "/books/" + book_id_list[1] + "/authors/" + author_id_list[2], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-requests.post(base_url + "/books/" + book_id_list[1] + "/authors/" + author_id_list[3], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-requests.post(base_url + "/books/" + book_id_list[2] + "/authors/" + author_id_list[4], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-requests.post(base_url + "/books/" + book_id_list[2] + "/authors/" + author_id_list[2], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-requests.post(base_url + "/books/" + book_id_list[2] + "/authors/" + author_id_list[0], data = json.dumps({}),headers={'Content-Type': 'application/json'})
-
-
-
-
+#response = requests.post(base_url + "/authors", 
+#            data = json.dumps({"firstName": "Juancito", 
+#                               "lastName": "Tomatito", 
+#                               "nationality": "Argentina"}), 
+#            headers={'Content-Type': 'application/json'})
+#id_author_A_created = response.json()['id']
+#response = requests.post(base_url + "/authors", 
+#            data = json.dumps({"firstName": "Pedrito", 
+#                               "lastName": "Manzanito", 
+#                               "nationality": 
+#                               "Chile"}), 
+#            headers={'Content-Type': 'application/json'})
+#id_author_B_created = response.json()['id']
+#response = requests.post(base_url + "/authors", 
+#            data = json.dumps({"firstName": "Paulito", 
+#                               "lastName": "Duraxnito", 
+#                               "nationality": "Bolivia"}), 
+#            headers={'Content-Type': 'application/json'})
+#response = requests.post(base_url + "/books", 
+#            data = json.dumps({"title" : "la mama de los anillos",
+#                               "publisher" : "zauron",
+#                               "editionYear" : 1000,
+#                               "editionCountry" : "mordor",
+#                               "price" : 10.10,
+#                               "isbn" : "1234567890", 
+#                               "reputationValue" : 9,
+#                               "loanType": "LOCAL",
+#                               "gender":"terror"}), 
+#            headers={'Content-Type': 'application/json'})
+#id_book_A_created = response.json()['id']
+#response = requests.post(base_url + "/books", 
+#            data = json.dumps({"title" : "la hermana de los anillos",
+#                               "publisher" : "gandalf",
+#                               "editionYear" : 9999,
+#                               "editionCountry" : "gondor",
+#                               "price" : 90.10,
+#                               "isbn" : "9999999999", 
+#                               "reputationValue" : 10,
+#                               "loanType": "REMOTE", 
+#                               "gender":"terror"}), 
+#            headers={'Content-Type': 'application/json'})
+#id_book_B_created = response.json()['id']
+#response = requests.post(base_url + "/books/" + id_book_A_created + "/authors/" + id_author_A_created, 
+#            data = json.dumps({}),
+#            headers={'Content-Type': 'application/json'})
+#response = requests.post(base_url + "/books/" + id_book_A_created + "/authors/" + id_author_B_created, 
+#            data = json.dumps({}),
+#            headers={'Content-Type': 'application/json'})
 #response = requests.post(base_url + "/members", 
 #            data = json.dumps({'firstName' : 'pabloide',
 #                               'lastName' : 'profelmi',
@@ -164,13 +116,14 @@ requests.post(base_url + "/books/" + book_id_list[2] + "/authors/" + author_id_l
 #                               'memberId': "1"}),
 #            headers={'Content-Type': 'application/json'})
 #print(response.text)
-#response = requests.post(base_url + "/loans",
-#            data = json.dumps({'agreedReturnDate' :  "2016-10-19",
-#                               'withdrawDate' : "2016-10-24",
-#                               "loanType": "REMOTE",
-#                               'sampleId': "3", 
-#                               'memberId': "1"}),
-#            headers={'Content-Type': 'application/json'})
+response = requests.post(base_url + "/loans",
+            data = json.dumps({'agreedReturnDate' :  "2016-10-19",
+                               'withdrawDate' : "2016-10-24",
+                               "loanType": "REMOTE",
+                               'sampleId': "3", 
+                               'memberId': "1"}),
+            headers={'Content-Type': 'application/json'})
+print(response.text)
 #response = requests.post(base_url + "/loans",
 #            data = json.dumps({'agreedReturnDate' : '2016-10-24',
 #                               'returnDate': None, 
