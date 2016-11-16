@@ -1,1 +1,1 @@
-SQLALCHEMY_DATABASE_URI = 'mysql://booksurfer:booksurfer@db/booksurfer'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://booksurfer:booksurfer@localhost:5432/booksurfer'
