@@ -43,7 +43,7 @@ def loan_is_allowed_for_member(member_id, sample_id, loan_type):
         message = message + "El libro no esta habilitado para prestamos remotos.\n"
     if not allowed_by_book_puntuation(a_member, a_book) and is_allowed:
         is_allowed = False
-        message = message + "La reputacion del libro es demasiado alta para ser prestado a ese socio.\n"
+        message = message + "El socio no tiene reputacion suficiente para retirar este libro.\n"
     if debt_more_than_three_books(member_id) and is_allowed:
         update_member_to_loan(a_member, False)
         is_allowed = False
