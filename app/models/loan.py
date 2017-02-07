@@ -18,7 +18,7 @@ class Loan(db.Model):
     comment = db.Column(db.Text)
     #valores posibles por ahora LOCAL o REMOTE
     loan_type = db.Column(db.String(10))
-    display = db.Column((db.String(10), default="DISPLAY"))
+    display = db.Column(db.String(10), default="DISPLAY")
 
 
     @staticmethod
@@ -128,8 +128,13 @@ class Loan(db.Model):
         if loan:
             loan.return_date = string_to_date(return_date)
             loan.comment = comment
-            loan.display = display 
             loan_logic.get_updated_member_reputation(Member.get(loan.member_id))         
+            db.session.commit()
+        return loan
+    def update_display(id, display):
+        loan = Loan.query.get(id)
+        if loan:
+            loan.display = display
             db.session.commit()
         return loan
 
