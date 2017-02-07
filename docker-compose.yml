@@ -12,6 +12,8 @@ booksurfer-api:
 
 db:
   image: mysql:5.7
+  ports: 
+    - "5572:3306"
   environment:
     MYSQL_ROOT_PASSWORD: booksurfer
     MYSQL_DATABASE: booksurfer

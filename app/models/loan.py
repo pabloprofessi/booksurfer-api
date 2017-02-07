@@ -131,6 +131,8 @@ class Loan(db.Model):
             loan_logic.get_updated_member_reputation(Member.get(loan.member_id))         
             db.session.commit()
         return loan
+
+    @staticmethod 
     def update_display(id, display):
         loan = Loan.query.get(id)
         if loan:
