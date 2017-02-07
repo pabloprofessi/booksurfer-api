@@ -356,7 +356,8 @@ class LoanResourceWithId(Resource):
         json_data = request.get_json(force=True)
         response = Loan.update(loan_id,
             json_data.get('returnDate', str(datetime.datetime.now().date())),
-            json_data['comment'])
+            json_data['comment'],
+            json_data.get('display', "DISPLAY"))
         if type(response) is Loan: 
             return marshal(response, Loan.simple_fields())
         return response

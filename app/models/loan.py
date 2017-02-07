@@ -18,6 +18,7 @@ class Loan(db.Model):
     comment = db.Column(db.Text)
     #valores posibles por ahora LOCAL o REMOTE
     loan_type = db.Column(db.String(10))
+    display = db.Column((db.String(10), default="DISPLAY"))
 
 
     @staticmethod
@@ -31,6 +32,7 @@ class Loan(db.Model):
         'withdrawDate' : fields.String(attribute='withdraw_date'),
         'comment' : fields.String,
         'loanType': fields.String(attribute='loan_type'),
+        'display': fields.String(attribute='display'),
         }
 
     @staticmethod
@@ -45,6 +47,7 @@ class Loan(db.Model):
         'withdrawDate' : fields.String(attribute='withdraw_date'),
         'comment' : fields.String,
         'loanType': fields.String(attribute='loan_type'),
+        'display': fields.String(attribute='display'),
         }
 
     @staticmethod
@@ -60,6 +63,7 @@ class Loan(db.Model):
         'withdrawDate' : fields.String(attribute='withdraw_date'),
         'comment' : fields.String,
         'loanType': fields.String(attribute='loan_type'),
+        'display': fields.String(attribute='display'),
         }
 
     @staticmethod
@@ -118,12 +122,13 @@ class Loan(db.Model):
         return new_one
 
     @staticmethod
-    def update(id, return_date, comment):
+    def update(id, return_date, comment, display):
         from member import Member
         loan = Loan.get(id)
         if loan:
             loan.return_date = string_to_date(return_date)
-            loan.comment = comment   
+            loan.comment = comment
+            loan.display = display 
             loan_logic.get_updated_member_reputation(Member.get(loan.member_id))         
             db.session.commit()
         return loan
